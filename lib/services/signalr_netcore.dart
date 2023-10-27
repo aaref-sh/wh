@@ -10,7 +10,7 @@ var states = [
 ];
 Future<void> initSignalRConnection() async {
   if (hubConnection == null) {
-    hubConnection = HubConnectionBuilder().withUrl(serverURI).build();
+    hubConnection = HubConnectionBuilder().withUrl('$serverURI/$hub').build();
     hubConnection?.on("NotifyWeb", _notify);
     hubConnection?.onclose(({error}) {
       notify('Connection closed', 'connections');
@@ -33,4 +33,5 @@ Future<void> initSignalRConnection() async {
 
 void _notify(List<Object?>? args) {
   var urgent = args?[0];
+  notify('test', 'connections');
 }

@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:wh/services/awesome_notification.dart';
-import 'package:wh/services/signalr_netcore.dart';
-import 'package:workmanager/workmanager.dart';
+import 'package:wh/all.dart';
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter
 void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:wh/screens/home.dart';
+import 'package:wh/all.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -9,29 +9,49 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  var tfpass = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    token = getToken()?.Token;
+    if (token != null) {
+      navigateToHome(context);
+    }
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(title: Text(resLoginBtn)),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              TextField(),
-              TextField(),
-              TextField(),
+              Row(
+                children: [
+                  Text("$resDeviceId: "),
+                  IconButton(
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: deviceId));
+
+                        Fluttertoast.showToast(msg: resCopied);
+                      },
+                      icon: const Icon(Icons.copy)),
+                ],
+              ),
+              TextField(
+                controller: TextEditingController(text: deviceId),
+                textAlign: TextAlign.center,
+                readOnly: true,
+              ),
+              TextField(
+                controller: tfpass,
+              ),
               ElevatedButton(
-                onPressed: () => {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) {
-                    return HomePage();
-                  }))
+                onPressed: () {
+                  tryLogin(context);
                 },
                 child: Row(
-                  children: const [
-                    Text('Login'),
-                    Icon(Icons.login),
+                  children: [
+                    Text(resLoginBtn),
+                    const Icon(Icons.login),
                   ],
                 ),
               ),
@@ -40,5 +60,38 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  Future<void> tryLogin(context) async {
+    var headers = {'Content-Type': 'application/json; charset=UTF-8'};
+    var body = LoginVM('1.0', deviceId!, tfpass.text);
+    try {
+      var response = await http.post(
+        Uri.parse('$protocol://$host$port/API/Mobile/Login'),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        var map = jsonDecode(response.body) as Map<String, dynamic>;
+        var loginResponse = LoginResponse.fromMap(map);
+        saveToken(loginResponse);
+        token = loginResponse.Token;
+        navigateToHome(context);
+      }
+      if ([505, 403].contains(response.statusCode)) {
+        var message = response.body;
+        showErrorMessage(context, message);
+      }
+    } catch (e) {
+      showErrorMessage(context, resUnexpectedError);
+    }
+  }
+
+  void navigateToHome(context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => HomePage()));
+    });
   }
 }

@@ -1,39 +1,29 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:platform_device_id_v3/platform_device_id.dart';
-import 'package:wakelock/wakelock.dart';
-import 'package:wh/globals/variables.dart';
-import 'package:wh/services/awesome_notification.dart';
-import 'package:wh/screens/login.dart';
-import 'package:wh/services/lifecycle_manager.dart';
-import 'package:wh/services/signalr_netcore.dart';
-import 'package:wh/services/workmanager.dart';
+import 'all.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Configure the plugin
-  initEverything();
-  if (kDebugMode) {
-    Wakelock.enable();
-    // The following statement enables the wakelock.
-    Wakelock.toggle(enable: true);
-  }
+  await initEverything();
   // Run your app
   runApp(const MyApp());
 }
 
 initEverything() async {
-  await NotificationService.initializeNotification();
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await initSharedPreferences();
+  // Configure the plugin
   try {
-    deviceId = await PlatformDeviceId.getDeviceId;
+    PlatformDeviceId.getDeviceId.then((value) => deviceId = value);
   } on PlatformException {
     deviceId = 'Failed to get deviceId.';
   }
+  if (kDebugMode) {
+    Wakelock.enable();
+    Wakelock.toggle(enable: true);
+  }
 
-  WidgetsBinding.instance.addObserver(LifecycleEventHandler());
-  initSignalRConnection();
+  NotificationService.initializeNotification().then((value) {
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler());
+    initSignalRConnection();
+  });
 }
 
 class MyApp extends StatelessWidget {
