@@ -8,3 +8,4 @@ var resINeedHelp = 'أحتاج مساعدة';
 var resEmergencyState = 'حالة طوارئ';
 
 var resSend = 'إرسال';
+var resCommentIsRequiredMsg = 'أخبرنا بالمساعدة التي تحتاجها';
