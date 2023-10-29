@@ -11,7 +11,7 @@ initEverything() async {
   await initSharedPreferences();
   // Configure the plugin
   try {
-    PlatformDeviceId.getDeviceId.then((value) => deviceId = value);
+    deviceId = await PlatformDeviceId.getDeviceId;
   } on PlatformException {
     deviceId = 'Failed to get deviceId.';
   }

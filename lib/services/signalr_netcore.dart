@@ -1,3 +1,4 @@
+import 'package:signalr_netcore/ihub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:wh/services/awesome_notification.dart';
 import '../globals/variables.dart';
@@ -10,7 +11,18 @@ var states = [
 ];
 Future<void> initSignalRConnection() async {
   if (hubConnection == null) {
-    hubConnection = HubConnectionBuilder().withUrl('$serverURI/$hub').build();
+    final defaultHeaders = MessageHeaders();
+    defaultHeaders.setHeaderValue("Authorization", "Bearer $token"); // method 1
+
+    final httpConnectionOptions = HttpConnectionOptions(
+      accessTokenFactory: () => Future.value(token), // method 2
+      // headers: defaultHeaders,
+    );
+
+    hubConnection = HubConnectionBuilder()
+        .withUrl('$serverURI/$hub?access_token=$token', // method 3
+            options: httpConnectionOptions)
+        .build();
     hubConnection?.on("NotifyWeb", _notify);
     hubConnection?.onclose(({error}) {
       notify('Connection closed', 'connections');

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import '../all.dart';
 
-showErrorMessage(BuildContext context, String message) {
+void showErrorMessage(BuildContext context, String message) {
   // set up the button
   Widget okButton = TextButton(
-    child: const Text("حسناً"),
+    child: Text(resOk),
     onPressed: () => Navigator.pop(context),
   );
 
@@ -15,6 +15,28 @@ showErrorMessage(BuildContext context, String message) {
 
   // show the dialog
   showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+void showLoadingPnal(context) {
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const CircularProgressIndicator(),
+        Text(resPleaseWait),
+      ],
+    ),
+  );
+
+  // show the dialog
+  showDialog(
+    barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
       return alert;

@@ -1,4 +1,6 @@
 import 'package:wh/all.dart';
+import 'package:wh/models/mobile_message.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -91,10 +93,30 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void sendStatus(BuildContext context) {
+  Future<void> sendStatus(BuildContext context) async {
     if (state == States.needHelp && tfcomment.text.trim() == '') {
       showErrorMessage(context, resCommentIsRequiredMsg);
       return;
+    }
+    var loc = GeoLocation('', '');
+    var message = MobileMessage(DateTime.now(), tfcomment.text, loc, state);
+
+    try {
+      showLoadingPnal(context);
+      var response = await http.post(
+        Uri.parse('$protocol://$host$port/API/Mobile/Send'),
+        headers: httpHeader(),
+        body: jsonEncode(message),
+      );
+      Navigator.pop(context);
+
+      if (response.statusCode == 200) {
+        showErrorMessage(context, resStatusSent);
+      }
+      handleResponseError(context, response);
+    } catch (e) {
+      Navigator.pop(context);
+      showErrorMessage(context, resUnexpectedError);
     }
   }
 }

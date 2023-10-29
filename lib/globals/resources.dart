@@ -9,3 +9,8 @@ var resEmergencyState = 'حالة طوارئ';
 
 var resSend = 'إرسال';
 var resCommentIsRequiredMsg = 'أخبرنا بالمساعدة التي تحتاجها';
+var resPleaseWait = 'يرجى الانتظار';
+var resOk = 'حسناً';
+var resStatusSent = 'تم إرسال الحالة للإدارة';
+var resErrorHappend = 'حصل خطأ ما';
+var resUnAuthorized = 'وصول غير مصرح';

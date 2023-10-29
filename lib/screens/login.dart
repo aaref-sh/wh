@@ -62,16 +62,17 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<void> tryLogin(context) async {
-    var headers = {'Content-Type': 'application/json; charset=UTF-8'};
+  Future<void> tryLogin(BuildContext context) async {
     var body = LoginVM('1.0', deviceId!, tfpass.text);
+
     try {
+      showLoadingPnal(context);
       var response = await http.post(
         Uri.parse('$protocol://$host$port/API/Mobile/Login'),
-        headers: headers,
+        headers: httpHeader(withAuthorization: false),
         body: jsonEncode(body),
       );
-
+      Navigator.pop(context);
       if (response.statusCode == 200) {
         var map = jsonDecode(response.body) as Map<String, dynamic>;
         var loginResponse = LoginResponse.fromMap(map);
@@ -79,10 +80,7 @@ class _LoginState extends State<Login> {
         token = loginResponse.Token;
         navigateToHome(context);
       }
-      if ([505, 403].contains(response.statusCode)) {
-        var message = response.body;
-        showErrorMessage(context, message);
-      }
+      handleResponseError(context, response);
     } catch (e) {
       showErrorMessage(context, resUnexpectedError);
     }
@@ -91,7 +89,7 @@ class _LoginState extends State<Login> {
   void navigateToHome(context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => HomePage()));
+          context, MaterialPageRoute(builder: (_) => const HomePage()));
     });
   }
 }
