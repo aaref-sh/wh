@@ -12,7 +12,6 @@ initEverything() async {
   var pref = getToken();
   token = pref?.Token;
   username = pref?.Owner;
-  initLocation();
   // Configure the plugin
   try {
     deviceId = await PlatformDeviceId.getDeviceId;
@@ -23,11 +22,17 @@ initEverything() async {
     Wakelock.enable();
     Wakelock.toggle(enable: true);
   }
+  initNotificationAndSignalr();
+}
 
-  NotificationService.initializeNotification().then((value) {
-    WidgetsBinding.instance.addObserver(LifecycleEventHandler());
-    initSignalRConnection();
-  });
+void initNotificationAndSignalr() {
+  initLocation();
+  if (token?.isNotEmpty ?? false) {
+    NotificationService.initializeNotification().then((value) {
+      WidgetsBinding.instance.addObserver(LifecycleEventHandler());
+      initSignalRConnection();
+    });
+  }
 }
 
 class MyApp extends StatelessWidget {

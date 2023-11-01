@@ -1,36 +1,41 @@
 import '../all.dart';
 
-List<Message> messages = [
-  Message(
-      'فادي', 'مرحبا', DateTime.now().subtract(const Duration(minutes: 10))),
-  Message(
-      'احمد', 'مرحبا 2', DateTime.now().subtract(const Duration(minutes: 8))),
-  Message(
-      'خالد', 'مرحبا 3.', DateTime.now().subtract(const Duration(minutes: 5))),
-];
+List<Message> messages = [];
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  ChatScreenState createState() => ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class ChatScreenState extends State<ChatScreen> {
   final _controller = TextEditingController();
   final scroller = ScrollController();
   void _sendMessage() {
     if (_controller.text.trim().isNotEmpty) {
-      setState(() {
-        messages
-            .add(Message(username!, _controller.text.trim(), DateTime.now()));
-      });
+      hubConnection?.invoke("Chat", args: [_controller.text.trim()]);
+
       scroller.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
       _controller.clear();
+    }
+  }
+
+  static void Function(void Function())? chatState;
+  @override
+  initState() {
+    super.initState();
+    chatState = setState;
+  }
+
+  static void addMessage(Message msg) {
+    messages.add(msg);
+    if (chatState != null) {
+      chatState!(() {});
     }
   }
 

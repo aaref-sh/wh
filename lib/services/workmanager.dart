@@ -21,7 +21,7 @@ void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
     });
 
 Future<void> initWorkmanager() async {
-  // await hubConnection?.stop();
+  await hubConnection?.stop();
   Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   Workmanager().registerOneOffTask("task-identifier", "simpleTask");
 }

@@ -24,19 +24,19 @@ Future<void> getPermissions() async {
   }
 }
 
-void initLocation() {
+Future<void> initLocation() async {
   try {
     Location location = Location();
 
+    getPermissions();
     try {
-      location.enableBackgroundMode(enable: true);
+      await location.enableBackgroundMode(enable: true);
     } on Exception catch (e) {
       // TODO
     }
     location.onLocationChanged.listen((LocationData currentLocation) {
       lastLocation = currentLocation;
     });
-    getPermissions();
   } on Exception catch (e) {
     // TODO
   }

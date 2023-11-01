@@ -16,34 +16,34 @@ class NavigationExample extends StatefulWidget {
   State<NavigationExample> createState() => _NavigationExampleState();
 }
 
-class _NavigationExampleState extends State<NavigationExample> {
-  int currentPageIndex = 0;
+int pageIndex = 0;
 
+class _NavigationExampleState extends State<NavigationExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
-            currentPageIndex = index;
+            pageIndex = index;
           });
         },
         // indicatorColor: Colors.amber[800],
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget>[
+        selectedIndex: pageIndex,
+        destinations: <Widget>[
           NavigationDestination(
             selectedIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
-            label: 'Home',
+            label: resMyStatus,
           ),
           NavigationDestination(
-            icon: Icon(Icons.business),
-            label: 'Business',
+            icon: Icon(Icons.notification_important_rounded),
+            label: resManagementMessages,
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.school),
-            icon: Icon(Icons.school_outlined),
-            label: 'School',
+            icon: Icon(Icons.chat),
+            label: resChat,
           ),
         ],
       ),
@@ -51,7 +51,7 @@ class _NavigationExampleState extends State<NavigationExample> {
         const MyStatus(),
         mapViewer(context),
         const ChatScreen(),
-      ][currentPageIndex],
+      ][pageIndex],
     );
   }
 }

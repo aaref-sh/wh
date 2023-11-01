@@ -24,3 +24,9 @@ var resDayShortcut = 'ي';
 var resHourShortcut = 'س';
 var resMinuteShortcut = 'د';
 var resNowShortcut = 'الآن';
+
+var resMyStatus = 'حالتي';
+var resManagementMessages = 'رسائل الإدارة';
+var resChat = 'المحادثة';
+
+var resHome = 'الرئيسية';

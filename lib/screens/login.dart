@@ -1,6 +1,8 @@
 import 'package:wh/all.dart';
 import 'package:http/http.dart' as http;
 
+import '../main.dart';
+
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -10,7 +12,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   var tfpass = TextEditingController();
-
+  bool loaded = false;
   @override
   Widget build(BuildContext context) {
     if (token != null) {
@@ -77,6 +79,7 @@ class _LoginState extends State<Login> {
         var loginResponse = LoginResponse.fromMap(map);
         saveToken(loginResponse);
         token = loginResponse.Token;
+        initNotificationAndSignalr();
         navigateToHome(context);
       }
       handleResponseError(context, response);

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:wh/all.dart';
 
@@ -140,6 +142,7 @@ void notify(String? msg) => AwesomeNotifications().createNotification(
     ));
 
 void notifyChat(Message messag) => NotificationService.showNotification(
-      title: '${messag.sender}:${messag.text.substring(0, 10)}',
+      title:
+          '${messag.sender}:${messag.text.substring(0, min(10, messag.text.length))}',
       body: messag.text,
     );

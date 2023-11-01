@@ -53,6 +53,7 @@ void _notify(List<Object?>? args) {
 void _notifyChat(List<Object?>? args) {
   var messageMap = args![0] as Map<String, dynamic>;
   var msg = Message.fromMap(messageMap);
-  messages.add(msg);
-  notifyChat(msg);
+
+  ChatScreenState.addMessage(msg);
+  if (pageIndex != 2) notifyChat(msg);
 }

@@ -11,10 +11,11 @@ class MyStatus extends StatefulWidget {
 class _MyStatusState extends State<MyStatus> {
   var tfcomment = TextEditingController();
   var state = States.ok;
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text(resHome),
       ),
       body: Container(
           padding: EdgeInsets.all(8),
@@ -32,7 +33,7 @@ class _MyStatusState extends State<MyStatus> {
                   ElevatedButton(
                     child: Text(resSend),
                     onPressed: () {
-                      sendStatus(context);
+                      sendStatus();
                     },
                   ),
                 ],
@@ -92,31 +93,34 @@ class _MyStatusState extends State<MyStatus> {
     );
   }
 
-  Future<void> sendStatus(BuildContext context) async {
+  Future<void> sendStatus() async {
+    showLoadingPnal(context);
     if (state == States.needHelp && tfcomment.text.trim() == '') {
       showErrorMessage(context, resCommentIsRequiredMsg);
       return;
     }
     var loc = GeoLocation(lastLocation?.latitude?.toString() ?? '',
         lastLocation?.longitude?.toString() ?? '');
-    var message = MobileMessage(DateTime.now(), tfcomment.text, loc, state);
+    var message =
+        MobileMessage(DateTime.now().toUtc(), tfcomment.text, loc, state);
 
     try {
-      showLoadingPnal(context);
+      var body = jsonEncode(message);
       var response = await http.post(
         Uri.parse('$protocol://$host$port/API/Mobile/Send'),
         headers: httpHeader(),
-        body: jsonEncode(message),
+        body: body,
       );
+      // Navigator.of(context).pop();
 
       if (response.statusCode == 200) {
         showErrorMessage(context, resStatusSent);
       }
       handleResponseError(context, response);
     } catch (e) {
-      Navigator.pop(context);
+      Navigator.of(context).pop();
       showErrorMessage(context, resUnexpectedError);
     }
-    getAllMessages(context);
+    // getAllMessages(context);
   }
 }

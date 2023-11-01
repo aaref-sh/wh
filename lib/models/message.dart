@@ -5,5 +5,5 @@ class Message {
   Message(this.sender, this.text, this.time);
 
   static fromMap(Map<String, dynamic> m) =>
-      Message(m['sender'], m['text'], m['sendTime']);
+      Message(m['sender'], m['message'], DateTime.parse(m['sendTime']));
 }
