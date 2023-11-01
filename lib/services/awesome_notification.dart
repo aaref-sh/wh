@@ -1,5 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/material.dart';
+import 'package:wh/all.dart';
 
 class NotificationService {
   static Future<void> initializeNotification() async {
@@ -9,8 +9,8 @@ class NotificationService {
         NotificationChannel(
           channelGroupKey: 'high_importance_channel',
           channelKey: 'high_importance_channel',
-          channelName: 'Basic notifications',
-          channelDescription: 'Notification channel for basic tests',
+          channelName: 'Connection notifications',
+          channelDescription: 'Notification channel connections',
           defaultColor: const Color(0xFF9D50DD),
           ledColor: Colors.white,
           importance: NotificationImportance.Max,
@@ -18,13 +18,30 @@ class NotificationService {
           onlyAlertOnce: true,
           playSound: true,
           criticalAlerts: true,
-        )
+        ),
+        NotificationChannel(
+          channelGroupKey: 'messages_channel',
+          channelKey: 'messages_channel',
+          channelName: 'Basic notifications',
+          channelDescription: 'Notification channel for basic tests',
+          defaultColor: const Color(0xFF9D50DD),
+          ledColor: Colors.white,
+          importance: NotificationImportance.Default,
+          channelShowBadge: true,
+          onlyAlertOnce: false,
+          playSound: true,
+          criticalAlerts: true,
+        ),
       ],
       channelGroups: [
         NotificationChannelGroup(
           channelGroupKey: 'high_importance_channel_group',
           channelGroupName: 'Group 1',
-        )
+        ),
+        NotificationChannelGroup(
+          channelGroupKey: 'chat_group',
+          channelGroupName: 'Chat',
+        ),
       ],
       debug: true,
     );
@@ -87,8 +104,9 @@ class NotificationService {
 
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: -1,
-        channelKey: 'high_importance_channel',
+        id: messages.length,
+        channelKey: 'messages_channel',
+        groupKey: 'chat_group',
         title: title,
         body: body,
         actionType: actionType,
@@ -111,12 +129,17 @@ class NotificationService {
   }
 }
 
-void notify(String? msg, String chanel) =>
-    AwesomeNotifications().createNotification(
+void notify(String? msg) => AwesomeNotifications().createNotification(
         content: NotificationContent(
       id: 10,
       channelKey: 'high_importance_channel',
       actionType: ActionType.Default,
+      timeoutAfter: const Duration(seconds: 10),
       title: msg,
       body: msg,
     ));
+
+void notifyChat(Message messag) => NotificationService.showNotification(
+      title: '${messag.sender}:${messag.text.substring(0, 10)}',
+      body: messag.text,
+    );

@@ -47,6 +47,7 @@ dependencies:
   flutter_map: ^4.0.0
   url_launcher: ^6.1.11
   sqflite: ^2.2.8+4
+  location: ^5.0.3
 
 # dependency_overrides:
 #     flutter_map:

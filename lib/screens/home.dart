@@ -1,122 +1,57 @@
-import 'package:wh/all.dart';
-import 'package:wh/models/mobile_message.dart';
-import 'package:http/http.dart' as http;
+import '../all.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return const MaterialApp(home: NavigationExample());
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  var tfcomment = TextEditingController();
-  var state = States.ok;
+class NavigationExample extends StatefulWidget {
+  const NavigationExample({super.key});
+
+  @override
+  State<NavigationExample> createState() => _NavigationExampleState();
+}
+
+class _NavigationExampleState extends State<NavigationExample> {
+  int currentPageIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        // indicatorColor: Colors.amber[800],
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.business),
+            label: 'Business',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.school),
+            icon: Icon(Icons.school_outlined),
+            label: 'School',
+          ),
+        ],
       ),
-      body: Container(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: TextField(
-                        enabled: state != States.ok,
-                        readOnly: state == States.ok,
-                        controller: tfcomment,
-                      )),
-                  ElevatedButton(
-                    child: Text(resSend),
-                    onPressed: () {
-                      sendStatus(context);
-                    },
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          side: BorderSide(
-                              width: state == States.ok ? 5 : 0,
-                              color: Color.fromARGB(255, 142, 204, 255)),
-                          backgroundColor: Colors.green[900]),
-                      child: Text(resImOK),
-                      onPressed: () {
-                        setState(() {
-                          state = States.ok;
-                          tfcomment.text = '';
-                        });
-                      },
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        side: BorderSide(
-                            width: state == States.needHelp ? 5 : 0,
-                            color: Color.fromARGB(255, 142, 204, 255)),
-                        backgroundColor: Colors.yellow[900],
-                      ),
-                      child: Text(resINeedHelp),
-                      onPressed: () {
-                        setState(() {
-                          state = States.needHelp;
-                        });
-                      },
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          side: BorderSide(
-                              width: state == States.emergency ? 5 : 0,
-                              color: Color.fromARGB(255, 142, 204, 255)),
-                          backgroundColor: Colors.red[900]),
-                      child: Text(resEmergencyState),
-                      onPressed: () {
-                        setState(() {
-                          state = States.emergency;
-                        });
-                        // need help functionality
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )),
+      body: <Widget>[
+        const MyStatus(),
+        mapViewer(context),
+        const ChatScreen(),
+      ][currentPageIndex],
     );
-  }
-
-  Future<void> sendStatus(BuildContext context) async {
-    if (state == States.needHelp && tfcomment.text.trim() == '') {
-      showErrorMessage(context, resCommentIsRequiredMsg);
-      return;
-    }
-    var loc = GeoLocation('', '');
-    var message = MobileMessage(DateTime.now(), tfcomment.text, loc, state);
-
-    try {
-      showLoadingPnal(context);
-      var response = await http.post(
-        Uri.parse('$protocol://$host$port/API/Mobile/Send'),
-        headers: httpHeader(),
-        body: jsonEncode(message),
-      );
-      Navigator.pop(context);
-
-      if (response.statusCode == 200) {
-        showErrorMessage(context, resStatusSent);
-      }
-      handleResponseError(context, response);
-    } catch (e) {
-      Navigator.pop(context);
-      showErrorMessage(context, resUnexpectedError);
-    }
   }
 }

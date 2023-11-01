@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../all.dart';
 
 @override
-Widget build(BuildContext context) {
+Widget mapViewer(BuildContext context) {
   return FlutterMap(
     options: MapOptions(
       center: LatLng(51.509364, -0.128928),

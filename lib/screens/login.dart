@@ -13,7 +13,6 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    token = getToken()?.Token;
     if (token != null) {
       navigateToHome(context);
     }

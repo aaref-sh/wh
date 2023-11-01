@@ -14,3 +14,13 @@ var resOk = 'حسناً';
 var resStatusSent = 'تم إرسال الحالة للإدارة';
 var resErrorHappend = 'حصل خطأ ما';
 var resUnAuthorized = 'وصول غير مصرح';
+
+var resChatTapLabel = 'المحادثة';
+var resTypeMessage = 'اكتب رسالة ...';
+
+var resYearShortcut = 'ع';
+var resMonthShortcut = 'ش';
+var resDayShortcut = 'ي';
+var resHourShortcut = 'س';
+var resMinuteShortcut = 'د';
+var resNowShortcut = 'الآن';

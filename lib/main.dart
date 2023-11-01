@@ -9,6 +9,10 @@ Future<void> main() async {
 initEverything() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initSharedPreferences();
+  var pref = getToken();
+  token = pref?.Token;
+  username = pref?.Owner;
+  initLocation();
   // Configure the plugin
   try {
     deviceId = await PlatformDeviceId.getDeviceId;
@@ -33,7 +37,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'سلامة',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -44,7 +48,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.blue,
       ),
       home: const Login(),
     );

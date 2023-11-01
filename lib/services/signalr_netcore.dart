@@ -1,7 +1,6 @@
 import 'package:signalr_netcore/ihub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
-import 'package:wh/services/awesome_notification.dart';
-import '../globals/variables.dart';
+import '../all.dart';
 
 HubConnection? hubConnection;
 var states = [
@@ -12,38 +11,48 @@ var states = [
 Future<void> initSignalRConnection() async {
   if (hubConnection == null) {
     final defaultHeaders = MessageHeaders();
-    defaultHeaders.setHeaderValue("Authorization", "Bearer $token"); // method 1
+    defaultHeaders.setHeaderValue("Authorization", "Bearer ${token ?? ''}");
 
     final httpConnectionOptions = HttpConnectionOptions(
-      accessTokenFactory: () => Future.value(token), // method 2
-      // headers: defaultHeaders,
+      accessTokenFactory: () => Future.value(token ?? ''),
+      headers: defaultHeaders,
     );
 
     hubConnection = HubConnectionBuilder()
-        .withUrl('$serverURI/$hub?access_token=$token', // method 3
-            options: httpConnectionOptions)
+        .withUrl(
+          '$serverURI/$hub',
+          options: httpConnectionOptions,
+        )
+        .withAutomaticReconnect()
         .build();
     hubConnection?.on("NotifyWeb", _notify);
+    hubConnection?.on("NotifyChat", _notifyChat);
     hubConnection?.onclose(({error}) {
-      notify('Connection closed', 'connections');
+      notify('Connection closed');
     });
     hubConnection?.onreconnected(({connectionId}) {
-      notify('Connection restored', "connections");
+      notify('Connection restored');
     });
     hubConnection?.onreconnecting(({error}) {
-      notify('Reconnecting', 'connections');
+      notify('Reconnecting');
     });
   }
   if (!states.contains(hubConnection?.state)) {
     try {
       await hubConnection?.start();
     } catch (e) {
-      notify('Connecting failed', 'connections');
+      notify('Connecting failed $serverURI/$hub');
     }
   }
 }
 
 void _notify(List<Object?>? args) {
-  var urgent = args?[0];
-  notify('test', 'connections');
+  notify('test');
+}
+
+void _notifyChat(List<Object?>? args) {
+  var messageMap = args![0] as Map<String, dynamic>;
+  var msg = Message.fromMap(messageMap);
+  messages.add(msg);
+  notifyChat(msg);
 }
