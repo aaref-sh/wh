@@ -143,6 +143,6 @@ void notify(String? msg) => AwesomeNotifications().createNotification(
 
 void notifyChat(Message messag) => NotificationService.showNotification(
       title:
-          '${messag.sender}:${messag.text.substring(0, min(10, messag.text.length))}',
-      body: messag.text,
+          '${messag.sender}:${messag.message.substring(0, min(10, messag.message.length))}',
+      body: messag.message,
     );

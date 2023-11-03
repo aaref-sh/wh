@@ -1,9 +1,15 @@
 class Message {
   String sender;
-  String text;
-  DateTime time;
-  Message(this.sender, this.text, this.time);
+  String message;
+  DateTime sendTime;
+  Message(this.sender, this.message, this.sendTime);
 
-  static fromMap(Map<String, dynamic> m) =>
+  static Message fromMap(Map<String, dynamic> m) =>
       Message(m['sender'], m['message'], DateTime.parse(m['sendTime']));
+
+  Map<String, dynamic> toJson() => {
+        'sender': sender,
+        'message': message,
+        'sendTime': sendTime.toIso8601String()
+      };
 }

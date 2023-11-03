@@ -9,10 +9,10 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(5),
       margin: EdgeInsets.only(
-        top: 10,
-        bottom: 10,
+        top: 8,
+        // bottom: 10,
         left: isMe ? 80 : 10,
         right: isMe ? 10 : 80,
       ),
@@ -37,14 +37,14 @@ class ChatBubble extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                timeAgo(message.time),
+                timeAgo(message.sendTime),
                 style: const TextStyle(color: Colors.black54),
               ),
             ],
           ),
           const SizedBox(height: 5),
           Text(
-            message.text,
+            message.message,
             style: const TextStyle(color: Colors.black),
           ),
         ],

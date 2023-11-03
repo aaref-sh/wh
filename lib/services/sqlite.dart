@@ -1,57 +1,89 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import '../all.dart';
 
-shit() async {
-  // Get a location using getDatabasesPath
-  var databasesPath = await getDatabasesPath();
-  String path = '$databasesPath\\demo.db';
+class DatabaseHelper {
+  // make this a singleton class
+  DatabaseHelper._privateConstructor();
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-// Delete the database
-  await deleteDatabase(path);
+  // only have a single app-wide reference to the database
+  static Database? _database;
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    // lazily instantiate the db the first time it is accessed
+    _database = await _initDatabase();
+    return _database!;
+  }
 
-// open the database
-  Database database = await openDatabase(path, version: 1,
-      onCreate: (Database db, int version) async {
-    // When creating the db, create the table
-    await db.execute(
-        'CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
-  });
+  // this opens the database (and creates it if it doesn't exist)
+  _initDatabase() async {
+    final String path = join(await getDatabasesPath(), 'wh.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
 
-// Insert some records in a transaction
-  await database.transaction((txn) async {
-    int id1 = await txn.rawInsert(
-        'INSERT INTO Test(name, value, num) VALUES("some name", 1234, 456.789)');
-    print('inserted1: $id1');
-    int id2 = await txn.rawInsert(
-        'INSERT INTO Test(name, value, num) VALUES(?, ?, ?)',
-        ['another name', 12345678, 3.1416]);
-    print('inserted2: $id2');
-  });
+  // SQL code to create the database table
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+          CREATE TABLE MESSAGES (
+            message TEXT NOT NULL,
+            sender TEXT NOT NULL,
+            sendTime TEXT NOT NULL
+          )
+          ''');
+  }
 
-// Update some record
-  int count = await database.rawUpdate(
-      'UPDATE Test SET name = ?, value = ? WHERE name = ?',
-      ['updated name', '9876', 'some name']);
-  print('updated: $count');
+  // Helper methods
 
-// Get the records
-  List<Map> list = await database.rawQuery('SELECT * FROM Test');
-  List<Map> expectedList = [
-    {'name': 'updated name', 'id': 1, 'value': 9876, 'num': 456.789},
-    {'name': 'another name', 'id': 2, 'value': 12345678, 'num': 3.1416}
-  ];
-  print(list);
-  print(expectedList);
+  // Inserts a row in the database where each key in the Map is a column name
+  // and the value is the column value. The return value is the id of the
+  // inserted row.
+  Future<int> insert(Message msg) async {
+    Database db = await instance.database;
+    return await db.insert('MESSAGES', msg.toJson());
+  }
 
-// Count the records
-  count = Sqflite.firstIntValue(
-      await database.rawQuery('SELECT COUNT(*) FROM Test'))!;
-  assert(count == 2);
+  // All of the rows are returned as a list of maps, where each map is
+  // a key-value list of columns.
+  Future<List<Map<String, dynamic>>> queryAllRows() async {
+    Database db = await instance.database;
+    return await db.query('my_table');
+  }
 
-// Delete a record 
-  count = await database
-      .rawDelete('DELETE FROM Test WHERE name = ?', ['another name']);
-  assert(count == 1);
+  // All of the rows are returned as a list of maps, where each map is
+  // a key-value list of columns.
+  Future<List<Message>> getMessagePage({int page = 1}) async {
+    int offset = (page - 1) * 100;
+    Database db = await instance.database;
+    var lst = await db.query('MESSAGES',
+        orderBy: 'sendTime DESC', limit: 100, offset: offset);
+    return lst.map((e) => Message.fromMap(e)).toList();
+  }
 
-// Close the database
-  await database.close();
+  // All of the methods (insert, query, update, delete) can also be done using
+  // raw SQL commands. This method uses a raw query to give the row count.
+  Future<int?> queryRowCount() async {
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM my_table'));
+  }
+
+  // We are assuming here that the id column in the map is set. The other
+  // column values will be used to update the row.
+  Future<int> update(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    int id = row['id'];
+    return await db.update('my_table', row, where: 'id = ?', whereArgs: [id]);
+  }
+
+  // Deletes the row specified by the id. The number of affected rows is
+  // returned. This should be 1 as long as the row exists.
+  Future<int> delete(int id) async {
+    Database db = await instance.database;
+    return await db.delete('my_table', where: 'id = ?', whereArgs: [id]);
+  }
 }

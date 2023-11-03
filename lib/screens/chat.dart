@@ -30,6 +30,14 @@ class ChatScreenState extends State<ChatScreen> {
   initState() {
     super.initState();
     chatState = setState;
+    loadMessages();
+  }
+
+  Future<void> loadMessages() async {
+    messages = await DatabaseHelper.instance.getMessagePage();
+    setState(() {
+      messages.sort((a, b) => a.sendTime.compareTo(b.sendTime));
+    });
   }
 
   static void addMessage(Message msg) {
@@ -64,15 +72,16 @@ class ChatScreenState extends State<ChatScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(10),
+            padding:
+                const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 4,
-                    minLines: 1,
-                    maxLength: 100,
+                    // keyboardType: TextInputType.multiline,
+                    // maxLines: 4,
+                    // minLines: 1,
+                    // maxLength: 100,
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: resTypeMessage,

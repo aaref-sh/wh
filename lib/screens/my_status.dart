@@ -55,7 +55,7 @@ class _MyStatusState extends State<MyStatus> {
                           backgroundColor: Colors.green[900]),
                       child: Text(resImOK,
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900)),
+                              fontSize: 18, fontWeight: FontWeight.w900)),
                       onPressed: () {
                         setState(() {
                           state = States.ok;
@@ -74,7 +74,7 @@ class _MyStatusState extends State<MyStatus> {
                       ),
                       child: Text(resINeedHelp,
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900)),
+                              fontSize: 18, fontWeight: FontWeight.w900)),
                       onPressed: () {
                         setState(() {
                           state = States.needHelp;
@@ -91,7 +91,7 @@ class _MyStatusState extends State<MyStatus> {
                           backgroundColor: Colors.red[900]),
                       child: Text(resEmergencyState,
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900)),
+                              fontSize: 18, fontWeight: FontWeight.w900)),
                       onPressed: () {
                         setState(() {
                           state = States.emergency;

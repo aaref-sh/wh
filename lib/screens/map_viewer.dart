@@ -24,7 +24,7 @@ class _MapViewerState extends State<MapViewer> {
           mapController: mapcontroller,
           options: MapOptions(
             center: LatLng(lati, longi),
-            zoom: 15,
+            zoom: 16,
           ),
           children: [
             TileLayer(
