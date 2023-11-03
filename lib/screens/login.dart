@@ -91,7 +91,10 @@ class _LoginState extends State<Login> {
   void navigateToHome(context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomePage()));
+          context,
+          MaterialPageRoute(
+              builder: (_) => const Directionality(
+                  textDirection: TextDirection.rtl, child: HomePage())));
     });
   }
 }

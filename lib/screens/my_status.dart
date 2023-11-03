@@ -21,20 +21,22 @@ class _MyStatusState extends State<MyStatus> {
           padding: EdgeInsets.all(8),
           child: Column(
             children: [
+              Expanded(child: Container()),
               Row(
                 children: [
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: TextField(
-                        enabled: state != States.ok,
-                        readOnly: state == States.ok,
-                        controller: tfcomment,
-                      )),
-                  ElevatedButton(
-                    child: Text(resSend),
-                    onPressed: () {
-                      sendStatus();
-                    },
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: resTypeMessage,
+                        border: const OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.multiline,
+                      minLines: 3,
+                      maxLines: 6,
+                      enabled: state != States.ok,
+                      readOnly: state == States.ok,
+                      controller: tfcomment,
+                    ),
                   ),
                 ],
               ),
@@ -45,11 +47,15 @@ class _MyStatusState extends State<MyStatus> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
+                          minimumSize: Size(20, 70),
                           side: BorderSide(
+                              strokeAlign: BorderSide.strokeAlignOutside,
                               width: state == States.ok ? 5 : 0,
                               color: Color.fromARGB(255, 142, 204, 255)),
                           backgroundColor: Colors.green[900]),
-                      child: Text(resImOK),
+                      child: Text(resImOK,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w900)),
                       onPressed: () {
                         setState(() {
                           state = States.ok;
@@ -59,12 +65,16 @@ class _MyStatusState extends State<MyStatus> {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
+                        minimumSize: Size(20, 70),
                         side: BorderSide(
+                            strokeAlign: BorderSide.strokeAlignOutside,
                             width: state == States.needHelp ? 5 : 0,
                             color: Color.fromARGB(255, 142, 204, 255)),
                         backgroundColor: Colors.yellow[900],
                       ),
-                      child: Text(resINeedHelp),
+                      child: Text(resINeedHelp,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w900)),
                       onPressed: () {
                         setState(() {
                           state = States.needHelp;
@@ -73,11 +83,15 @@ class _MyStatusState extends State<MyStatus> {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
+                          minimumSize: Size(20, 70),
                           side: BorderSide(
+                              strokeAlign: BorderSide.strokeAlignOutside,
                               width: state == States.emergency ? 5 : 0,
                               color: Color.fromARGB(255, 142, 204, 255)),
                           backgroundColor: Colors.red[900]),
-                      child: Text(resEmergencyState),
+                      child: Text(resEmergencyState,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w900)),
                       onPressed: () {
                         setState(() {
                           state = States.emergency;
@@ -88,6 +102,22 @@ class _MyStatusState extends State<MyStatus> {
                   ],
                 ),
               ),
+              ElevatedButton(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(resSend, style: const TextStyle(fontSize: 25)),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 5),
+                      child: Icon(Icons.send),
+                    )
+                  ],
+                ),
+                onPressed: () {
+                  sendStatus();
+                },
+              ),
+              Expanded(child: Container()),
             ],
           )),
     );
@@ -99,10 +129,16 @@ class _MyStatusState extends State<MyStatus> {
       showErrorMessage(context, resCommentIsRequiredMsg);
       return;
     }
-    var loc = GeoLocation(lastLocation?.latitude?.toString() ?? '',
-        lastLocation?.longitude?.toString() ?? '');
-    var message =
-        MobileMessage(DateTime.now().toUtc(), tfcomment.text, loc, state);
+    var loc = GeoLocation(
+      lastLocation?.latitude?.toString() ?? '',
+      lastLocation?.longitude?.toString() ?? '',
+    );
+    var message = MobileMessage(
+      DateTime.now().toUtc(),
+      tfcomment.text,
+      loc,
+      state,
+    );
 
     try {
       var body = jsonEncode(message);

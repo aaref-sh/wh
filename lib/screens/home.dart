@@ -1,3 +1,5 @@
+import 'package:wh/screens/management_messages.dart';
+
 import '../all.dart';
 
 class HomePage extends StatelessWidget {
@@ -37,19 +39,20 @@ class _NavigationExampleState extends State<NavigationExample> {
             label: resMyStatus,
           ),
           NavigationDestination(
-            icon: Icon(Icons.notification_important_rounded),
+            icon: Icon(Icons.notification_important_outlined),
+            selectedIcon: Icon(Icons.notification_important_rounded),
             label: resManagementMessages,
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.school),
-            icon: Icon(Icons.chat),
+            selectedIcon: Icon(Icons.chat),
+            icon: Icon(Icons.chat_outlined),
             label: resChat,
           ),
         ],
       ),
       body: <Widget>[
         const MyStatus(),
-        mapViewer(context),
+        const ManagementMessages(),
         const ChatScreen(),
       ][pageIndex],
     );

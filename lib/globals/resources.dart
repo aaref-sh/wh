@@ -30,3 +30,5 @@ var resManagementMessages = 'رسائل الإدارة';
 var resChat = 'المحادثة';
 
 var resHome = 'الرئيسية';
+var resNoLocationProvided = 'لا يتوفر موقع';
+var resLicatingFailed = 'فشل تحديد الموقع';

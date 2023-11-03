@@ -1,6 +1,6 @@
 import 'package:wh/all.dart';
 
-const String host = '10.0.2.2';
+const String host = '192.168.1.111';
 const String port = ':5000';
 const String hub = 'MessageHub';
 const String protocol = 'http';
