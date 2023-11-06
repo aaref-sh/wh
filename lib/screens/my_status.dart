@@ -143,7 +143,7 @@ class _MyStatusState extends State<MyStatus> {
     try {
       var body = jsonEncode(message);
       var response = await http.post(
-        Uri.parse('$protocol://$host$port/API/Mobile/Send'),
+        Uri.parse('$serverURI/API/Mobile/Send'),
         headers: httpHeader(),
         body: body,
       );

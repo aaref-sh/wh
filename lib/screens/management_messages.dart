@@ -76,7 +76,7 @@ Future<List<AdminMessage>> getAlerts() async {
   var res = <AdminMessage>[];
   try {
     var response = await http.get(
-      Uri.parse('$protocol://$host$port/API/Mobile/GetAllMessages'),
+      Uri.parse('$serverURI/API/Mobile/GetAllMessages'),
       headers: httpHeader(),
     );
     // Navigator.pop(context);

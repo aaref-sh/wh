@@ -45,7 +45,7 @@ String timeAgo(DateTime date) {
 
 getAllMessages(context) async {
   var response = await http.get(
-    Uri.parse('$protocol://$host$port/API/Mobile/GetAllMessages'),
+    Uri.parse('$serverURI/API/Mobile/GetAllMessages'),
     headers: httpHeader(),
   );
   // Navigator.pop(context);

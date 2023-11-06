@@ -18,8 +18,6 @@ class NavigationExample extends StatefulWidget {
   State<NavigationExample> createState() => _NavigationExampleState();
 }
 
-int pageIndex = 0;
-
 class _NavigationExampleState extends State<NavigationExample> {
   @override
   Widget build(BuildContext context) {
@@ -34,18 +32,18 @@ class _NavigationExampleState extends State<NavigationExample> {
         selectedIndex: pageIndex,
         destinations: <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            icon: const Icon(Icons.home_outlined),
             label: resMyStatus,
           ),
           NavigationDestination(
-            icon: Icon(Icons.notification_important_outlined),
-            selectedIcon: Icon(Icons.notification_important_rounded),
+            icon: const Icon(Icons.notification_important_outlined),
+            selectedIcon: const Icon(Icons.notification_important_rounded),
             label: resManagementMessages,
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.chat),
-            icon: Icon(Icons.chat_outlined),
+            selectedIcon: const Icon(Icons.chat),
+            icon: const Icon(Icons.chat_outlined),
             label: resChat,
           ),
         ],

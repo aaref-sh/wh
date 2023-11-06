@@ -61,7 +61,7 @@ class DatabaseHelper {
     Database db = await instance.database;
     var lst = await db.query('MESSAGES',
         orderBy: 'sendTime DESC', limit: 100, offset: offset);
-    return lst.map((e) => Message.fromMap(e)).toList();
+    return lst.map((e) => Message.fromMap(e)).toList().reversed.toList();
   }
 
   // All of the methods (insert, query, update, delete) can also be done using

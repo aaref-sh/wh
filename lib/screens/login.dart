@@ -66,21 +66,18 @@ class _LoginState extends State<Login> {
   Future<void> tryLogin(BuildContext context) async {
     var body = LoginVM('1.0', deviceId!, tfpass.text);
 
-    try {
-      showLoadingPnal(context);
+    try { 
       var response = await http.post(
-        Uri.parse('$protocol://$host$port/API/Mobile/Login'),
+        Uri.parse('$serverURI/API/Mobile/Login'),
         headers: httpHeader(withAuthorization: false),
         body: jsonEncode(body),
-      );
-      Navigator.pop(context);
+      ); 
       if (response.statusCode == 200) {
         var map = jsonDecode(response.body) as Map<String, dynamic>;
         var loginResponse = LoginResponse.fromMap(map);
         saveToken(loginResponse);
         token = loginResponse.Token;
-        initNotificationAndSignalr();
-        navigateToHome(context);
+        initNotificationAndSignalr(); 
       }
       handleResponseError(context, response);
     } catch (e) {

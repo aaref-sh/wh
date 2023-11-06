@@ -1,7 +1,5 @@
 import '../all.dart';
 
-List<Message> messages = [];
-
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -25,18 +23,25 @@ class ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> loadMoreMessages() async {
+    var adds = await DatabaseHelper.instance.getMessagePage(page: page++);
+    morePages = adds.length == 100;
+    adds.addAll(messages);
+    setState(() {
+      messages = adds;
+    });
+  }
+
   static void Function(void Function())? chatState;
   @override
   initState() {
     super.initState();
     chatState = setState;
-    loadMessages();
-  }
-
-  Future<void> loadMessages() async {
-    messages = await DatabaseHelper.instance.getMessagePage();
-    setState(() {
-      messages.sort((a, b) => a.sendTime.compareTo(b.sendTime));
+    loadMoreMessages();
+    scroller.addListener(() {
+      if (morePages && scroller.position.maxScrollExtent == scroller.offset) {
+        loadMoreMessages();
+      }
     });
   }
 
@@ -72,24 +77,28 @@ class ChatScreenState extends State<ChatScreen> {
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
+            decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: Colors.grey)
+                // color: Colors.white,
+                ),
+            margin:
+                const EdgeInsets.only(left: 10, right: 10, top: 2, bottom: 2),
+            padding: EdgeInsets.only(left: 10),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
-                    // keyboardType: TextInputType.multiline,
-                    // maxLines: 4,
-                    // minLines: 1,
-                    // maxLength: 100,
-                    controller: _controller,
-                    decoration: InputDecoration(
+                    decoration: InputDecoration.collapsed(
                       hintText: resTypeMessage,
-                      border: const OutlineInputBorder(),
+                      border: InputBorder.none,
                     ),
+                    maxLines: 1,
+                    controller: _controller,
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 5),
                 IconButton(
                     icon: const Icon(Icons.send), onPressed: _sendMessage),
               ],

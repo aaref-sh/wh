@@ -9,41 +9,46 @@ var states = [
   HubConnectionState.Connecting
 ];
 Future<void> initSignalRConnection() async {
-  if (hubConnection == null) {
-    final defaultHeaders = MessageHeaders();
-    defaultHeaders.setHeaderValue("Authorization", "Bearer ${token ?? ''}");
+  hubConnection ??= HubConnectionBuilder()
+      .withUrl('$serverURI/$hub?access_token=${token ?? ''}')
+      .withAutomaticReconnect()
+      .build();
 
-    final httpConnectionOptions = HttpConnectionOptions(
-      accessTokenFactory: () => Future.value(token ?? ''),
-      headers: defaultHeaders,
-    );
-
-    hubConnection = HubConnectionBuilder()
-        .withUrl(
-          '$serverURI/$hub',
-          options: httpConnectionOptions,
-        )
-        .withAutomaticReconnect()
-        .build();
-    hubConnection?.on("NotifyWeb", _notify);
-    hubConnection?.on("NotifyChat", _notifyChat);
-    hubConnection?.onclose(({error}) {
-      notify('Connection closed');
-    });
-    hubConnection?.onreconnected(({connectionId}) {
-      notify('Connection restored');
-    });
-    hubConnection?.onreconnecting(({error}) {
-      notify('Reconnecting');
-    });
-  }
   if (!states.contains(hubConnection?.state)) {
     try {
       await hubConnection?.start();
+      bindEvents(hubConnection);
     } catch (e) {
       notify('Connecting failed $serverURI/$hub');
+      print(e);
     }
   }
+}
+
+Future<HubConnection> backgroundSignalR() async {
+  final hubConnection = HubConnectionBuilder()
+      .withUrl('$serverURI/$hub?access_token=${token ?? ''}')
+      .withAutomaticReconnect()
+      .build();
+
+  // Start the connection
+  await hubConnection.start();
+  bindEvents(hubConnection);
+  return hubConnection;
+}
+
+void bindEvents(HubConnection? hubConnection) {
+  hubConnection?.on("NotifyWeb", _notify);
+  hubConnection?.on("NotifyChat", _notifyChat);
+  hubConnection?.onclose(({error}) {
+    notify('Connection closed');
+  });
+  hubConnection?.onreconnected(({connectionId}) {
+    notify('Connection restored');
+  });
+  hubConnection?.onreconnecting(({error}) {
+    notify('Reconnecting');
+  });
 }
 
 void _notify(List<Object?>? args) {
