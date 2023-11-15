@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'all.dart';
 
 Future<void> main() async {
   await initEverything();
+
   // Run your app
   runApp(const MyApp());
 }
@@ -18,10 +21,8 @@ initEverything() async {
   } on PlatformException {
     deviceId = 'Failed to get deviceId.';
   }
-  if (kDebugMode) {
-    Wakelock.enable();
-    Wakelock.toggle(enable: true);
-  }
+  if (kDebugMode) Wakelock.enable();
+
   initNotificationAndSignalr();
 }
 

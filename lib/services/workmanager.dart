@@ -12,7 +12,7 @@ void callbackDispatcher() {
     await NotificationService.initializeNotification();
     // Create a SignalR client
     try {
-      var hubConnection = await backgroundSignalR();
+      var hubConnection = await signalRConnection();
 
       while (true) {
         try {
@@ -44,8 +44,8 @@ Future<void> initWorkmanager() async {
   Workmanager().registerPeriodicTask(
     "1",
     signalRTask,
-    frequency: const Duration(minutes: 15),
-    initialDelay: const Duration(seconds: 2),
+    frequency: const Duration(minutes: 30),
+    initialDelay: Duration.zero,
     tag: "signalR",
   );
 }

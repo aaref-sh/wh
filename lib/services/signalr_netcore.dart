@@ -1,52 +1,52 @@
-import 'package:signalr_netcore/ihub_protocol.dart';
-import 'package:signalr_netcore/signalr_client.dart';
+import 'package:signalr_core/signalr_core.dart';
 import '../all.dart';
 
 HubConnection? hubConnection;
 var states = [
-  HubConnectionState.Connected,
-  HubConnectionState.Reconnecting,
-  HubConnectionState.Connecting
+  HubConnectionState.connected,
+  HubConnectionState.reconnecting,
+  HubConnectionState.connecting,
 ];
+
 Future<void> initSignalRConnection() async {
-  hubConnection ??= HubConnectionBuilder()
-      .withUrl('$serverURI/$hub?access_token=${token ?? ''}')
+  hubConnection ??= await signalRConnection();
+}
+
+Future<HubConnection> signalRConnection() async {
+  var hubConnection = HubConnectionBuilder()
+      .withUrl(
+          '$serverURI/$hub',
+          HttpConnectionOptions(
+            logMessageContent: true,
+            transport: HttpTransportType.webSockets,
+            accessTokenFactory: () async => token,
+            logging: (level, message) => print(message),
+          ))
       .withAutomaticReconnect()
       .build();
 
   if (!states.contains(hubConnection?.state)) {
     try {
-      await hubConnection?.start();
+      await hubConnection.start();
       bindEvents(hubConnection);
     } catch (e) {
       notify('Connecting failed $serverURI/$hub');
       print(e);
     }
   }
-}
-
-Future<HubConnection> backgroundSignalR() async {
-  final hubConnection = HubConnectionBuilder()
-      .withUrl('$serverURI/$hub?access_token=${token ?? ''}')
-      .withAutomaticReconnect()
-      .build();
-
-  // Start the connection
-  await hubConnection.start();
-  bindEvents(hubConnection);
   return hubConnection;
 }
 
 void bindEvents(HubConnection? hubConnection) {
   hubConnection?.on("NotifyWeb", _notify);
   hubConnection?.on("NotifyChat", _notifyChat);
-  hubConnection?.onclose(({error}) {
+  hubConnection?.onclose((error) {
     notify('Connection closed');
   });
-  hubConnection?.onreconnected(({connectionId}) {
+  hubConnection?.onreconnected((connectionId) {
     notify('Connection restored');
   });
-  hubConnection?.onreconnecting(({error}) {
+  hubConnection?.onreconnecting((error) {
     notify('Reconnecting');
   });
 }

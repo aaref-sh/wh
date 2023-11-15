@@ -58,3 +58,11 @@ getAllMessages(context) async {
   }
   handleResponseError(context, response);
 }
+
+String fixText(String text) {
+  try {
+    return utf8.decode(text.codeUnits);
+  } catch (e) {
+    return text;
+  }
+}
