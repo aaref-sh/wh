@@ -7,14 +7,14 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
-      // case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
         await detachedCallBack();
         break;
       case AppLifecycleState.resumed:
         await resumeCallBack();
         break;
+      case AppLifecycleState.paused:
     }
   }
 }

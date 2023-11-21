@@ -25,7 +25,7 @@ class ChatScreenState extends State<ChatScreen> {
 
   Future<void> loadMoreMessages() async {
     var adds = await DatabaseHelper.instance.getMessagePage(page: page++);
-    morePages = adds.length == 100;
+    morePages = adds.length == chatPageSize;
     adds.addAll(messages);
     setState(() {
       messages = adds;

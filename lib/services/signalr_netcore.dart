@@ -25,7 +25,7 @@ Future<HubConnection> signalRConnection() async {
       .withAutomaticReconnect()
       .build();
 
-  if (!states.contains(hubConnection?.state)) {
+  if (!states.contains(hubConnection.state)) {
     try {
       await hubConnection.start();
       bindEvents(hubConnection);

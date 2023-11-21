@@ -39,6 +39,7 @@ Future<void> initToken() async {
 }
 
 Future<void> initWorkmanager() async {
+  await hubConnection?.stop();
   WidgetsFlutterBinding.ensureInitialized();
   Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
   Workmanager().registerPeriodicTask(

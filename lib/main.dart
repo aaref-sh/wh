@@ -31,7 +31,7 @@ void initNotificationAndSignalr() {
   if (token?.isNotEmpty ?? false) {
     NotificationService.initializeNotification().then((value) {
       WidgetsBinding.instance.addObserver(LifecycleEventHandler());
-      initSignalRConnection();
+      // initSignalRConnection();
     });
   }
 }

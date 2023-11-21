@@ -57,10 +57,10 @@ class DatabaseHelper {
   // All of the rows are returned as a list of maps, where each map is
   // a key-value list of columns.
   Future<List<Message>> getMessagePage({int page = 1}) async {
-    int offset = (page - 1) * 100;
+    int offset = (page - 1) * chatPageSize;
     Database db = await instance.database;
     var lst = await db.query('MESSAGES',
-        orderBy: 'sendTime DESC', limit: 100, offset: offset);
+        orderBy: 'sendTime DESC', limit: chatPageSize, offset: offset);
     return lst.map((e) => Message.fromMap(e)).toList().reversed.toList();
   }
 
