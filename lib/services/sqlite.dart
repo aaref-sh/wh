@@ -33,7 +33,16 @@ class DatabaseHelper {
             message TEXT NOT NULL,
             sender TEXT NOT NULL,
             sendTime TEXT NOT NULL
-          )
+          );
+          
+          CREATE TABLE MANAGEMENTMESSAGES (
+            id INTEGER NOT NULL,
+            sendTime TEXT NOT NULL,
+            text TEXT NOT NULL,
+            latitude REAL,
+            longitude REAL,
+            sender TEXT NOT NULL
+          );
           ''');
   }
 

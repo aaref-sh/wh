@@ -1,18 +1,33 @@
-import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:wh/all.dart';
+import 'package:wh/main.dart';
 
 const signalRTask = "signalRTask";
+var port = ReceivePort();
+const backgroundIsolate = "backgroundIsolate";
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await initToken();
-    await NotificationService.initializeNotification();
-    // Create a SignalR client
     try {
+      WidgetsFlutterBinding.ensureInitialized();
+      await initToken();
+      await NotificationService.initializeNotification();
       var hubConnection = await signalRConnection();
+
+      IsolateNameServer.registerPortWithName(port.sendPort, backgroundIsolate);
+      // Listen for messages from the background isolate
+      port.listen((msg) {
+        if (msg == 1) {
+          notifyOnNewMessage = true;
+        } else if (msg == 0) {
+          notifyOnNewMessage = false;
+        } else {
+          hubConnection.invoke("Chat", args: [msg]);
+        }
+      });
 
       while (true) {
         try {
@@ -30,29 +45,12 @@ void callbackDispatcher() {
   });
 }
 
-Future<void> initToken() async {
-  await initSharedPreferences();
-
-  var pref = getToken();
-  token = pref?.Token;
-  username = pref?.Owner;
-}
-
 Future<void> initWorkmanager() async {
-  await hubConnection?.stop();
-  WidgetsFlutterBinding.ensureInitialized();
   Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
   Workmanager().registerPeriodicTask(
     "1",
     signalRTask,
     frequency: const Duration(minutes: 30),
-    initialDelay: Duration.zero,
     tag: "signalR",
   );
-}
-
-Future<void> cancelWorkmanager() async {
-  // await hubConnection?.stop();
-  Workmanager().cancelAll();
-  initSignalRConnection();
 }

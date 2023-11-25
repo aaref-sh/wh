@@ -1,6 +1,11 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'all.dart';
+
+const String mainIsolate = "workmanager";
+ReceivePort _port = ReceivePort();
 
 Future<void> main() async {
   await initEverything();
@@ -11,29 +16,31 @@ Future<void> main() async {
 
 initEverything() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initSharedPreferences();
-  var pref = getToken();
-  token = pref?.Token;
-  username = pref?.Owner;
+  await initToken();
   // Configure the plugin
   try {
     deviceId = await PlatformDeviceId.getDeviceId;
-  } on PlatformException {
-    deviceId = 'Failed to get deviceId.';
-  }
+  } catch (e) {}
   if (kDebugMode) Wakelock.enable();
 
-  initNotificationAndSignalr();
+  if (token?.isEmpty ?? true) return;
+  initListinPort();
+
+  initBackgroundAndLocation();
 }
 
-void initNotificationAndSignalr() {
+void initListinPort() {
+  IsolateNameServer.registerPortWithName(_port.sendPort, mainIsolate);
+  // Listen for messages from the background isolate
+  _port.listen((msg) {
+    ChatScreenState.addMessage(msg);
+  });
+}
+
+void initBackgroundAndLocation() {
+  WidgetsBinding.instance.addObserver(LifecycleEventHandler());
   initLocation();
-  if (token?.isNotEmpty ?? false) {
-    NotificationService.initializeNotification().then((value) {
-      WidgetsBinding.instance.addObserver(LifecycleEventHandler());
-      // initSignalRConnection();
-    });
-  }
+  initWorkmanager();
 }
 
 class MyApp extends StatelessWidget {

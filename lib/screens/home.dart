@@ -22,7 +22,6 @@ class _NavigationExampleState extends State<NavigationExample> {
   @override
   void initState() {
     super.initState();
-    cancelWorkmanager();
   }
 
   @override

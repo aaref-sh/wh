@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import '../all.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -12,13 +14,8 @@ class ChatScreenState extends State<ChatScreen> {
   final scroller = ScrollController();
   void _sendMessage() {
     if (_controller.text.trim().isNotEmpty) {
-      hubConnection?.invoke("Chat", args: [_controller.text.trim()]);
-
-      scroller.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      IsolateNameServer.lookupPortByName(backgroundIsolate)
+          ?.send(_controller.text.trim());
       _controller.clear();
     }
   }
@@ -47,9 +44,7 @@ class ChatScreenState extends State<ChatScreen> {
 
   static void addMessage(Message msg) {
     messages.add(msg);
-    if (chatState != null) {
-      chatState!(() {});
-    }
+    if (chatState != null) chatState!(() {});
   }
 
   @override

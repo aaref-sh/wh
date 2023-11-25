@@ -1,16 +1,15 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:signalr_core/signalr_core.dart';
 import '../all.dart';
+import '../main.dart';
 
-HubConnection? hubConnection;
 var states = [
   HubConnectionState.connected,
   HubConnectionState.reconnecting,
   HubConnectionState.connecting,
 ];
-
-Future<void> initSignalRConnection() async {
-  hubConnection ??= await signalRConnection();
-}
 
 Future<HubConnection> signalRConnection() async {
   var hubConnection = HubConnectionBuilder()
@@ -55,10 +54,12 @@ void _notify(List<Object?>? args) {
   notify('test');
 }
 
+bool notifyOnNewMessage = true;
 void _notifyChat(List<Object?>? args) {
   var messageMap = args![0] as Map<String, dynamic>;
   var msg = Message.fromMap(messageMap);
   DatabaseHelper.instance.insert(msg);
-  ChatScreenState.addMessage(msg);
-  if (pageIndex != 2) notifyChat(msg);
+  if (pageIndex != 2 && notifyOnNewMessage) notifyChat(msg);
+  // Send a message to the main isolate
+  IsolateNameServer.lookupPortByName(mainIsolate)?.send(msg);
 }

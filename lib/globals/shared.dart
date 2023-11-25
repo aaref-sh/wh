@@ -66,3 +66,10 @@ String fixText(String text) {
     return text;
   }
 }
+
+Future<void> initToken() async {
+  await initSharedPreferences();
+  var pref = getToken();
+  token = pref?.Token;
+  username = pref?.Owner;
+}

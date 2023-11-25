@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:wh/services/workmanager.dart';
 
@@ -20,9 +22,13 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
 }
 
 resumeCallBack() {
-  cancelWorkmanager();
+  tougleNotifications(0);
 }
 
 detachedCallBack() {
-  initWorkmanager();
+  tougleNotifications(1);
+}
+
+void tougleNotifications(int n) {
+  IsolateNameServer.lookupPortByName(backgroundIsolate)?.send(n);
 }
