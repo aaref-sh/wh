@@ -8,6 +8,6 @@ class GeoLocation {
       {'Latitude': latitude, 'Longitude': longitude};
 
   static GeoLocation fromMap(Map<String, dynamic> m) {
-    return GeoLocation(m['latitude'], m['longitude']);
+    return GeoLocation(m['latitude']?.toString(), m['longitude']?.toString());
   }
 }

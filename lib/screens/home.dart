@@ -1,6 +1,6 @@
-import 'package:wh/screens/management_messages.dart';
-
+import 'dart:ui';
 import '../all.dart';
+import 'new_home.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,10 +18,28 @@ class NavigationExample extends StatefulWidget {
   State<NavigationExample> createState() => _NavigationExampleState();
 }
 
+const String mainIsolate = "workmanager";
+void initListinPort() {
+  ReceivePort port = ReceivePort();
+  IsolateNameServer.registerPortWithName(port.sendPort, mainIsolate);
+  // Listen for messages from the background isolate
+  port.listen((msg) {
+    ChatScreenState.addMessage(Message.fromMap(msg));
+  });
+}
+
+Future<void> initBackgroundAndLocation() async {
+  WidgetsBinding.instance.addObserver(LifecycleEventHandler());
+  initLocation();
+  await initWorkmanager();
+  resumeCallBack();
+}
+
 class _NavigationExampleState extends State<NavigationExample> {
   @override
   void initState() {
     super.initState();
+    initBackgroundAndLocation();
   }
 
   @override
@@ -54,9 +72,10 @@ class _NavigationExampleState extends State<NavigationExample> {
         ],
       ),
       body: <Widget>[
-        const MyStatus(),
+        NewMyStatus(),
         const ManagementMessages(),
         const ChatScreen(),
+        const MyStatus(),
       ][pageIndex],
     );
   }

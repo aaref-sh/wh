@@ -5,7 +5,6 @@ import 'package:wh/all.dart';
 import 'package:wh/main.dart';
 
 const signalRTask = "signalRTask";
-var port = ReceivePort();
 const backgroundIsolate = "backgroundIsolate";
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter
@@ -13,10 +12,12 @@ void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     try {
       WidgetsFlutterBinding.ensureInitialized();
+      IsolateNameServer.removePortNameMapping(backgroundIsolate);
       await initToken();
       await NotificationService.initializeNotification();
       var hubConnection = await signalRConnection();
 
+      var port = ReceivePort();
       IsolateNameServer.registerPortWithName(port.sendPort, backgroundIsolate);
       // Listen for messages from the background isolate
       port.listen((msg) {

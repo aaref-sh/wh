@@ -1,47 +1,6 @@
-import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
-
 import 'all.dart';
 
-const String mainIsolate = "workmanager";
-ReceivePort _port = ReceivePort();
-
-Future<void> main() async {
-  await initEverything();
-
-  // Run your app
-  runApp(const MyApp());
-}
-
-initEverything() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initToken();
-  // Configure the plugin
-  try {
-    deviceId = await PlatformDeviceId.getDeviceId;
-  } catch (e) {}
-  if (kDebugMode) Wakelock.enable();
-
-  if (token?.isEmpty ?? true) return;
-  initListinPort();
-
-  initBackgroundAndLocation();
-}
-
-void initListinPort() {
-  IsolateNameServer.registerPortWithName(_port.sendPort, mainIsolate);
-  // Listen for messages from the background isolate
-  _port.listen((msg) {
-    ChatScreenState.addMessage(msg);
-  });
-}
-
-void initBackgroundAndLocation() {
-  WidgetsBinding.instance.addObserver(LifecycleEventHandler());
-  initLocation();
-  initWorkmanager();
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

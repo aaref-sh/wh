@@ -34,7 +34,8 @@ class DatabaseHelper {
             sender TEXT NOT NULL,
             sendTime TEXT NOT NULL
           );
-          
+          ''');
+    await db.execute('''    
           CREATE TABLE MANAGEMENTMESSAGES (
             id INTEGER NOT NULL,
             sendTime TEXT NOT NULL,
@@ -73,12 +74,29 @@ class DatabaseHelper {
     return lst.map((e) => Message.fromMap(e)).toList().reversed.toList();
   }
 
+  Future<int> insertAdminMessage(AdminMessage msg) async {
+    Database db = await instance.database;
+    return await db.insert('MANAGEMENTMESSAGES', msg.toJson());
+  }
+
+  Future<List<AdminMessage>> getAdminMessagesPage({int page = 1}) async {
+    int offset = (page - 1) * messagesPageSize;
+    Database db = await instance.database;
+    var lst = await db.query('MANAGEMENTMESSAGES',
+        orderBy: 'sendTime DESC', limit: messagesPageSize, offset: offset);
+    return lst.map((e) => AdminMessage.fromMap2(e)).toList();
+  }
+
+  Future<bool> isAdminMessagesEmpty() async {
+    return await queryRowCount('MANAGEMENTMESSAGES') == 0;
+  }
+
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
-  Future<int?> queryRowCount() async {
+  Future<int?> queryRowCount(String table) async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM my_table'));
+        await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
   // We are assuming here that the id column in the map is set. The other

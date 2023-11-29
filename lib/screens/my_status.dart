@@ -124,7 +124,6 @@ class _MyStatusState extends State<MyStatus> {
   }
 
   Future<void> sendStatus() async {
-    showLoadingPnal(context);
     if (state == States.needHelp && tfcomment.text.trim() == '') {
       showErrorMessage(context, resCommentIsRequiredMsg);
       return;
@@ -142,17 +141,19 @@ class _MyStatusState extends State<MyStatus> {
 
     try {
       var body = jsonEncode(message);
+      var ctx = showErrorMessage(context, resPleaseWait, loading: true);
       var response = await http.post(
         Uri.parse('$serverURI/API/Mobile/Send'),
         headers: httpHeader(),
         body: body,
       );
-      // Navigator.of(context).pop();
+      // Navigator.of(ctx).pop();
 
       if (response.statusCode == 200) {
         showErrorMessage(context, resStatusSent);
+      } else {
+        handleResponseError(context, response);
       }
-      handleResponseError(context, response);
     } catch (e) {
       Navigator.of(context).pop();
       showErrorMessage(context, resUnexpectedError);

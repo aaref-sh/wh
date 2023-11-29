@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import '../all.dart';
 
 class ChatScreen extends StatefulWidget {

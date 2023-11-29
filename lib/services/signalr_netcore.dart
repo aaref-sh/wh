@@ -1,9 +1,6 @@
-import 'dart:isolate';
 import 'dart:ui';
-
 import 'package:signalr_core/signalr_core.dart';
 import '../all.dart';
-import '../main.dart';
 
 var states = [
   HubConnectionState.connected,
@@ -17,7 +14,7 @@ Future<HubConnection> signalRConnection() async {
           '$serverURI/$hub',
           HttpConnectionOptions(
             logMessageContent: true,
-            transport: HttpTransportType.webSockets,
+            transport: HttpTransportType.longPolling,
             accessTokenFactory: () async => token,
             logging: (level, message) => print(message),
           ))
@@ -61,5 +58,5 @@ void _notifyChat(List<Object?>? args) {
   DatabaseHelper.instance.insert(msg);
   if (pageIndex != 2 && notifyOnNewMessage) notifyChat(msg);
   // Send a message to the main isolate
-  IsolateNameServer.lookupPortByName(mainIsolate)?.send(msg);
+  IsolateNameServer.lookupPortByName(mainIsolate)?.send(msg.toJson());
 }

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:wh/services/workmanager.dart';
 
+import '../screens/home.dart';
+
 class LifecycleEventHandler extends WidgetsBindingObserver {
   LifecycleEventHandler();
 
@@ -23,9 +25,11 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
 
 resumeCallBack() {
   tougleNotifications(0);
+  initListinPort();
 }
 
 detachedCallBack() {
+  IsolateNameServer.removePortNameMapping(mainIsolate);
   tougleNotifications(1);
 }
 

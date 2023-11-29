@@ -12,7 +12,6 @@ class _ManagementMessagesState extends State<ManagementMessages> {
   late Future<List<AdminMessage>> alerts;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     alerts = getAlerts();
   }
@@ -75,21 +74,35 @@ class _ManagementMessagesState extends State<ManagementMessages> {
 Future<List<AdminMessage>> getAlerts() async {
   var res = <AdminMessage>[];
   try {
+    await getAdminMessagesFromServer();
+    res = await DatabaseHelper.instance.getAdminMessagesPage();
+  } catch (e) {
+    print(e);
+  }
+  return res;
+}
+
+Future<void> getAdminMessagesFromServer() async {
+  try {
+    var actionName = await DatabaseHelper.instance.isAdminMessagesEmpty()
+        ? "GetAllMessages"
+        : "GetPendingMessages";
     var response = await http.get(
-      Uri.parse('$serverURI/API/Mobile/GetAllMessages'),
+      Uri.parse('$serverURI/API/Mobile/$actionName'),
       headers: httpHeader(),
     );
     // Navigator.pop(context);
     if (response.statusCode == 200) {
       var map = jsonDecode(response.body) as Map<String, dynamic>;
       var msgs = map['messages'];
-
       msgs?.forEach((element) {
-        res.add(AdminMessage.fromMap(element));
+        try {
+          DatabaseHelper.instance
+              .insertAdminMessage(AdminMessage.fromMap(element));
+        } catch (e) {}
       });
     }
-  } on Exception catch (e) {
-    // TODO
+  } catch (e) {
+    print(e);
   }
-  return res;
 }
