@@ -1,8 +1,5 @@
-import 'dart:isolate';
 import 'dart:ui';
-
-import 'package:wh/all.dart';
-import 'package:wh/main.dart';
+import 'package:wh/all.dart'; 
 
 const signalRTask = "signalRTask";
 const backgroundIsolate = "backgroundIsolate";
@@ -16,6 +13,8 @@ void callbackDispatcher() {
       await initToken();
       await NotificationService.initializeNotification();
       var hubConnection = await signalRConnection();
+
+      IsolateNameServer.lookupPortByName(mainIsolate)?.send(1);
 
       var port = ReceivePort();
       IsolateNameServer.registerPortWithName(port.sendPort, backgroundIsolate);
@@ -47,7 +46,7 @@ void callbackDispatcher() {
 }
 
 Future<void> initWorkmanager() async {
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+  Workmanager().initialize(callbackDispatcher);
   Workmanager().registerPeriodicTask(
     "1",
     signalRTask,

@@ -14,7 +14,7 @@ Future<HubConnection> signalRConnection() async {
           '$serverURI/$hub',
           HttpConnectionOptions(
             logMessageContent: true,
-            transport: HttpTransportType.longPolling,
+            transport: HttpTransportType.webSockets,
             accessTokenFactory: () async => token,
             logging: (level, message) => print(message),
           ))
@@ -34,20 +34,23 @@ Future<HubConnection> signalRConnection() async {
 }
 
 void bindEvents(HubConnection? hubConnection) {
-  hubConnection?.on("NotifyWeb", _notify);
+  hubConnection?.on("Test", _test);
   hubConnection?.on("NotifyChat", _notifyChat);
   hubConnection?.onclose((error) {
-    notify('Connection closed');
+    try {
+      hubConnection.start();
+    } catch (e) {}
+    // notify('Connection closed');
   });
   hubConnection?.onreconnected((connectionId) {
-    notify('Connection restored');
+    // notify('Connection restored');
   });
   hubConnection?.onreconnecting((error) {
-    notify('Reconnecting');
+    // notify(resReconnecting);
   });
 }
 
-void _notify(List<Object?>? args) {
+void _test(List<Object?>? args) {
   notify('test');
 }
 

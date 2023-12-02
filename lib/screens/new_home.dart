@@ -10,16 +10,22 @@ class NewMyStatus extends StatefulWidget {
 
 class _NewMyStatusState extends State<NewMyStatus> {
   var state = States.ok;
-
+  bool loading = false;
   var tfcomment = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(resHome),
+    return AsyncBody(
+      appBar: AppBar(title: Text(resHome)),
+      loading: loading,
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.send),
+        onPressed: () {
+          sendStatus();
+        },
       ),
-      body: Column(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -139,13 +145,6 @@ class _NewMyStatusState extends State<NewMyStatus> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.send),
-        onPressed: () {
-          sendStatus();
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -167,19 +166,27 @@ class _NewMyStatusState extends State<NewMyStatus> {
 
     try {
       var body = jsonEncode(message);
-      showErrorMessage(context, resSendingToManagement);
+      setState(() {
+        loading = true;
+      });
       var response = await http.post(
         Uri.parse('$serverURI/API/Mobile/Send'),
         headers: httpHeader(),
         body: body,
       );
+      setState(() {
+        loading = false;
+      });
       if (response.statusCode == 200) {
+        tfcomment.clear();
         showErrorMessage(context, resStatusSent);
       } else {
         handleResponseError(context, response);
       }
     } catch (e) {
-      Navigator.of(context).pop();
+      setState(() {
+        loading = false;
+      });
       showErrorMessage(context, resUnexpectedError);
     }
   }

@@ -10,122 +10,113 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
-Future<String> initEveryThing(context) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initToken();
-  // Configure the plugin
-  try {
-    deviceId = await PlatformDeviceId.getDeviceId ?? deviceId;
-  } catch (e) {}
-  if (token != null) {
-    navigateToHome(context);
-  }
-  return "";
-}
-
 class _LoginState extends State<Login> {
   var tfpass = TextEditingController();
-  bool loaded = false;
+  bool loading = true;
+
+  Future<void> initEveryThing(context) async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await initToken();
+    // Configure the plugin
+    try {
+      deviceId = await PlatformDeviceId.getDeviceId ?? deviceId;
+    } catch (e) {}
+    setState(() => loading = false);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initEveryThing(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Object>(
-        stream: null,
-        builder: (context, snapshot) {
-          return Scaffold(
-            appBar: AppBar(title: Text(resLoginBtn)),
-            body: SingleChildScrollView(
-              child: FutureBuilder(
-                builder: (ctx, snapshot) {
-                  if (snapshot.hasData) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text("$resDeviceId: "),
-                              IconButton(
-                                  onPressed: () async {
-                                    await Clipboard.setData(
-                                        ClipboardData(text: deviceId));
+    if (token != null) {
+      navigateToHome(context);
+    }
+    var size = MediaQuery.of(context).size;
+    return AsyncBody(
+      appBar: AppBar(title: Text(resLoginBtn)),
+      loading: loading,
+      child: SingleChildScrollView(
+          child: Center(
+        child: Container(
+          width: size.width * .85,
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              SizedBox(height: size.height * .2),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: deviceId),
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                      enabled: false,
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: deviceId));
 
-                                    Fluttertoast.showToast(msg: resCopied);
-                                  },
-                                  icon: const Icon(Icons.copy)),
-                            ],
-                          ),
-                          TextField(
-                            controller: TextEditingController(text: deviceId),
-                            textAlign: TextAlign.center,
-                            readOnly: true,
-                          ),
-                          TextField(
-                            controller: tfpass,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              tryLogin(context);
-                            },
-                            child: Row(
-                              children: [
-                                Text(resLoginBtn),
-                                const Icon(Icons.login),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(child: Text(resPleaseWait)),
-                      ),
-                      Container()
-                    ],
-                  ));
-                },
-                future: initEveryThing(context),
+                        Fluttertoast.showToast(msg: resCopied);
+                      },
+                      icon: const Icon(Icons.copy)),
+                ],
               ),
-            ),
-          );
-        });
+              TextField(
+                controller: tfpass,
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: InputDecoration(
+                  labelText: resSecretCode,
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  tryLogin(context);
+                },
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(resLoginBtn),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.login),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      )),
+    );
   }
 
   Future<void> tryLogin(BuildContext context) async {
-    var body = LoginVM('1.0', deviceId!, tfpass.text);
-
-    showErrorMessage(context, resPleaseWait, loading: true);
+    setState(() => loading = true);
     try {
+      var body = LoginVM('1.0', deviceId, tfpass.text);
       var response = await http.post(
         Uri.parse('$serverURI/API/Mobile/Login'),
         headers: httpHeader(withAuthorization: false),
         body: jsonEncode(body),
       );
-      Navigator.of(context).pop();
       if (response.statusCode == 200) {
         var map = jsonDecode(response.body) as Map<String, dynamic>;
         var loginResponse = LoginResponse.fromMap(map);
         saveToken(loginResponse);
         token = loginResponse.Token;
-        setState(() {});
-      } else {
-        handleResponseError(context, response);
       }
+      handleResponseError(context, response);
     } catch (e) {
-      Navigator.of(context).pop();
       showErrorMessage(context, resUnexpectedError);
     }
+    setState(() => loading = false);
   }
 }
 

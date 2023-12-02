@@ -11,6 +11,7 @@ class ChatScreen extends StatefulWidget {
 class ChatScreenState extends State<ChatScreen> {
   final _controller = TextEditingController();
   final scroller = ScrollController();
+  int page = 1;
   void _sendMessage() {
     if (_controller.text.trim().isNotEmpty) {
       IsolateNameServer.lookupPortByName(backgroundIsolate)
@@ -33,12 +34,21 @@ class ChatScreenState extends State<ChatScreen> {
   initState() {
     super.initState();
     chatState = setState;
+    messages.clear();
     loadMoreMessages();
     scroller.addListener(() {
       if (morePages && scroller.position.maxScrollExtent == scroller.offset) {
         loadMoreMessages();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    messages.clear();
+    chatState = null;
   }
 
   static void addMessage(Message msg) {
@@ -74,7 +84,7 @@ class ChatScreenState extends State<ChatScreen> {
             decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: Colors.grey)
+                border: Border.all(color: Color.fromARGB(255, 173, 173, 173))
                 // color: Colors.white,
                 ),
             margin:
@@ -82,16 +92,7 @@ class ChatScreenState extends State<ChatScreen> {
             padding: EdgeInsets.only(left: 10),
             child: Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration.collapsed(
-                      hintText: resTypeMessage,
-                      border: InputBorder.none,
-                    ),
-                    maxLines: 1,
-                    controller: _controller,
-                  ),
-                ),
+                ChatTextField(controller: _controller),
                 const SizedBox(width: 5),
                 IconButton(
                     icon: const Icon(Icons.send), onPressed: _sendMessage),

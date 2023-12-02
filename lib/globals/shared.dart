@@ -73,3 +73,8 @@ Future<void> initToken() async {
   token = pref?.Token;
   username = pref?.Owner;
 }
+
+var rtlRegex = RegExp(r'[\u0591-\u07FF]');
+bool isRtl(String text) {
+  return rtlRegex.hasMatch(text);
+}

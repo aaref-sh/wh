@@ -1,4 +1,5 @@
 var resDeviceId = 'معرف الجهاز';
+var resSecretCode = 'الرمز السري';
 var resUnexpectedError = 'حصل خطأ غير متوقع';
 var resLoginBtn = 'تسجيل دخول';
 var resCopied = 'تم النسخ';

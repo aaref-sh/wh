@@ -9,49 +9,54 @@ class ManagementMessages extends StatefulWidget {
 }
 
 class _ManagementMessagesState extends State<ManagementMessages> {
-  late Future<List<AdminMessage>> alerts;
+  var alerts = <AdminMessage>[];
+  var scroller = ScrollController();
+  var moreAlerts = false;
+  int pageNumber = 0;
+  bool loading = false;
   @override
   void initState() {
     super.initState();
-    alerts = getAlerts();
+    loadMoreAlerts();
+    scroller.addListener(() {
+      if (moreAlerts && scroller.position.maxScrollExtent == scroller.offset) {
+        loadMoreAlerts();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(resManagementMessages),
-        actions: [
-          IconButton(
-              onPressed: () => reload(), icon: Icon(Icons.replay_outlined))
-        ],
-      ),
-      body: FutureBuilder(
-        builder: (ctx, snapshot) {
-          if (snapshot.hasData) {
-            var alerts = snapshot.data;
-            return Container(
-                padding: const EdgeInsets.all(10),
-                child: ListView.builder(
-                    itemCount: alerts?.length,
-                    itemBuilder: ((context, index) {
-                      return ListTile(
-                        onTap: () {
-                          if (alerts[index].location.latitude == null) {
-                            Fluttertoast.showToast(msg: resNoLocationProvided);
-                            return;
-                          }
-                          viewSite(alerts[index]);
-                        },
-                        title: Text(alerts![index].text),
-                      );
-                    })));
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-        future: alerts,
+    return AsyncBody(
+      loading: loading,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(resManagementMessages),
+          actions: [
+            IconButton(
+                onPressed: () => reload(),
+                icon: const Icon(Icons.replay_outlined))
+          ],
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(10),
+          child: ListView.builder(
+            controller: scroller,
+            itemCount: alerts.length,
+            itemBuilder: ((context, index) {
+              return ListTile(
+                onTap: () {
+                  if (alerts[index].location.latitude == null) {
+                    Fluttertoast.showToast(msg: resNoLocationProvided);
+                    return;
+                  }
+                  viewSite(alerts[index]);
+                },
+                title: Text(alerts[index].text),
+              );
+            }),
+          ),
+        ),
       ),
     );
   }
@@ -65,44 +70,49 @@ class _ManagementMessagesState extends State<ManagementMessages> {
   }
 
   reload() async {
-    alerts = getAlerts();
-    await alerts;
-    setState(() {});
-  }
-}
-
-Future<List<AdminMessage>> getAlerts() async {
-  var res = <AdminMessage>[];
-  try {
-    await getAdminMessagesFromServer();
-    res = await DatabaseHelper.instance.getAdminMessagesPage();
-  } catch (e) {
-    print(e);
-  }
-  return res;
-}
-
-Future<void> getAdminMessagesFromServer() async {
-  try {
-    var actionName = await DatabaseHelper.instance.isAdminMessagesEmpty()
-        ? "GetAllMessages"
-        : "GetPendingMessages";
-    var response = await http.get(
-      Uri.parse('$serverURI/API/Mobile/$actionName'),
-      headers: httpHeader(),
-    );
-    // Navigator.pop(context);
-    if (response.statusCode == 200) {
-      var map = jsonDecode(response.body) as Map<String, dynamic>;
-      var msgs = map['messages'];
-      msgs?.forEach((element) {
-        try {
-          DatabaseHelper.instance
-              .insertAdminMessage(AdminMessage.fromMap(element));
-        } catch (e) {}
-      });
+    setState(() => loading = true);
+    try {
+      await getAdminMessagesFromServer();
+    } catch (e) {
+      print(e);
     }
-  } catch (e) {
-    print(e);
+    setState(() => loading = false);
+  }
+
+  Future<void> loadMoreAlerts() async {
+    setState(() => loading = true);
+    var lst =
+        await DatabaseHelper.instance.getAdminMessagesPage(page: ++pageNumber);
+    alerts.addAll(lst);
+    if (alerts.isEmpty) reload();
+    moreAlerts = lst.length & messagesPageSize != 0;
+    setState(() => loading = false);
+  }
+
+  Future<void> getAdminMessagesFromServer() async {
+    try {
+      var actionName = await DatabaseHelper.instance.isAdminMessagesEmpty()
+          ? "GetAllMessages"
+          : "GetPendingMessages";
+      var response = await http.get(
+        Uri.parse('$serverURI/API/Mobile/$actionName'),
+        headers: httpHeader(),
+      );
+      // Navigator.pop(context);
+      if (response.statusCode == 200) {
+        var map = jsonDecode(response.body) as Map<String, dynamic>;
+        var msgs = map['messages'];
+        msgs?.forEach((element) {
+          try {
+            var alert = AdminMessage.fromMap(element);
+            alerts.insert(0, alert);
+            DatabaseHelper.instance.insertAdminMessage(alert);
+          } catch (e) {}
+        });
+      }
+      handleResponseError(context, response);
+    } catch (e) {
+      print(e);
+    }
   }
 }

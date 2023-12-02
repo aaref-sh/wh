@@ -24,6 +24,7 @@ void initListinPort() {
   IsolateNameServer.registerPortWithName(port.sendPort, mainIsolate);
   // Listen for messages from the background isolate
   port.listen((msg) {
+    if (msg == 1) tougleNotifications(0);
     ChatScreenState.addMessage(Message.fromMap(msg));
   });
 }
@@ -72,7 +73,7 @@ class _NavigationExampleState extends State<NavigationExample> {
         ],
       ),
       body: <Widget>[
-        NewMyStatus(),
+        const NewMyStatus(),
         const ManagementMessages(),
         const ChatScreen(),
         const MyStatus(),
