@@ -45,7 +45,6 @@ class ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     messages.clear();
     chatState = null;

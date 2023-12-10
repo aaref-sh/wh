@@ -1,9 +1,5 @@
 import 'dart:ui';
-
-import 'package:flutter/material.dart';
-import 'package:wh/services/workmanager.dart';
-
-import '../screens/home.dart';
+import '../all.dart';
 
 class LifecycleEventHandler extends WidgetsBindingObserver {
   LifecycleEventHandler();

@@ -12,8 +12,17 @@ class MobileMessage {
     return {
       "SendDate": sendTime.toIso8601String(),
       "Message": message,
-      "Location": location,
+      "Location": location.toJson(),
       "Status": status.index
     };
+  }
+
+  static MobileMessage fromMap(Map<String, dynamic> m) {
+    return MobileMessage(
+      DateTime.parse(m['SendDate']),
+      m['Message'],
+      GeoLocation.fromMap2(m['Location']),
+      States.values[m['Status']],
+    );
   }
 }

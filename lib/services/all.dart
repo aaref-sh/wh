@@ -5,4 +5,4 @@ export 'signalr_netcore.dart';
 export 'sqlite.dart';
 export 'workmanager.dart';
 export 'location.dart';
-export 'package:location/location.dart';
+export 'package:geolocator/geolocator.dart';

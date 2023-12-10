@@ -8,7 +8,7 @@ String serverURI = 'https://salama2.bsite.net';
 String deviceId = "Unknown";
 String? token;
 String? username;
-LocationData? lastLocation;
+Position? lastLocation;
 
 int pageIndex = 0;
 
@@ -17,3 +17,6 @@ bool morePages = true;
 
 const chatPageSize = 100;
 const messagesPageSize = 20;
+const String mainIsolate = "workmanager";
+const signalRTask = "signalRTask";
+const backgroundIsolate = "backgroundIsolate";

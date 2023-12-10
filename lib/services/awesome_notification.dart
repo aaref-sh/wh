@@ -34,6 +34,19 @@ class NotificationService {
           playSound: true,
           criticalAlerts: true,
         ),
+        NotificationChannel(
+          channelGroupKey: 'status_channel',
+          channelKey: 'status_channel',
+          channelName: 'Failed sent status notifications',
+          channelDescription: 'Notification channel for resend failed status',
+          defaultColor: const Color(0xFF9D50DD),
+          ledColor: Colors.white,
+          importance: NotificationImportance.Default,
+          channelShowBadge: true,
+          onlyAlertOnce: false,
+          playSound: true,
+          criticalAlerts: true,
+        ),
       ],
       channelGroups: [
         NotificationChannelGroup(
@@ -43,6 +56,10 @@ class NotificationService {
         NotificationChannelGroup(
           channelGroupKey: 'chat_group',
           channelGroupName: 'Chat',
+        ),
+        NotificationChannelGroup(
+          channelGroupKey: 'status_group',
+          channelGroupName: 'Status',
         ),
       ],
       debug: true,
@@ -92,7 +109,9 @@ class NotificationService {
   static Future<void> showNotification({
     required final String title,
     required final String body,
+    required String channelKey,
     final String? summary,
+    final String? groupKey,
     final Map<String, String>? payload,
     final ActionType actionType = ActionType.Default,
     final NotificationLayout notificationLayout = NotificationLayout.Default,
@@ -106,9 +125,9 @@ class NotificationService {
 
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: messages.length,
-        channelKey: 'messages_channel',
-        groupKey: 'chat_group',
+        id: messages.length + DateTime.now().millisecond,
+        channelKey: channelKey,
+        groupKey: groupKey,
         title: title,
         body: body,
         actionType: actionType,
@@ -142,7 +161,13 @@ void notify(String? msg) => AwesomeNotifications().createNotification(
     ));
 
 void notifyChat(Message messag) => NotificationService.showNotification(
-      title:
-          '${messag.sender}:${messag.message.substring(0, min(10, messag.message.length))}',
-      body: messag.message,
-    );
+    title: messag.sender,
+    body: messag.message,
+    channelKey: 'messages_channel',
+    groupKey: 'chat_group');
+
+void notifyStatus() => NotificationService.showNotification(
+    title: 'تم إرسال الحالة للإدارة',
+    body: 'تم إرسال الحالة للإدارة',
+    channelKey: 'status_channel',
+    groupKey: 'status_group');

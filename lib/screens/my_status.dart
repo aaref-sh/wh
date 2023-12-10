@@ -1,125 +1,126 @@
+import 'dart:ui';
+
 import '../all.dart';
 import 'package:http/http.dart' as http;
 
-class MyStatus extends StatefulWidget {
-  const MyStatus({super.key});
+class NewMyStatus extends StatefulWidget {
+  const NewMyStatus({super.key});
 
   @override
-  State<MyStatus> createState() => _MyStatusState();
+  State<NewMyStatus> createState() => _NewMyStatusState();
 }
 
-class _MyStatusState extends State<MyStatus> {
-  var tfcomment = TextEditingController();
+class _NewMyStatusState extends State<NewMyStatus> {
   var state = States.ok;
+  bool loading = false;
+  var tfcomment = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(resHome),
-      ),
-      body: Container(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Expanded(child: Container()),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: resTypeMessage,
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.multiline,
-                      minLines: 3,
-                      maxLines: 6,
-                      enabled: state != States.ok,
-                      readOnly: state == States.ok,
-                      controller: tfcomment,
+    var size = MediaQuery.of(context).size;
+    return AsyncBody(
+      appBar: AppBar(title: Text(resHome)),
+      loading: loading,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: tfcomment,
+              keyboardType: TextInputType.multiline,
+              maxLines: 5,
+              minLines: 2,
+              decoration: InputDecoration(
+                labelText: resTypeMessage,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.message),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green,
+                    minimumSize: Size(size.width * .9, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
+                    side: const BorderSide(
+                      color: Colors.green,
+                      width: 2,
+                    ),
+                    elevation: 2,
                   ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size(20, 70),
-                          side: BorderSide(
-                              strokeAlign: BorderSide.strokeAlignOutside,
-                              width: state == States.ok ? 5 : 0,
-                              color: Color.fromARGB(255, 142, 204, 255)),
-                          backgroundColor: Colors.green[900]),
-                      child: Text(resImOK,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w900)),
-                      onPressed: () {
-                        setState(() {
-                          state = States.ok;
-                          tfcomment.text = '';
-                        });
-                      },
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(20, 70),
-                        side: BorderSide(
-                            strokeAlign: BorderSide.strokeAlignOutside,
-                            width: state == States.needHelp ? 5 : 0,
-                            color: Color.fromARGB(255, 142, 204, 255)),
-                        backgroundColor: Colors.yellow[900],
-                      ),
-                      child: Text(resINeedHelp,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w900)),
-                      onPressed: () {
-                        setState(() {
-                          state = States.needHelp;
-                        });
-                      },
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size(20, 70),
-                          side: BorderSide(
-                              strokeAlign: BorderSide.strokeAlignOutside,
-                              width: state == States.emergency ? 5 : 0,
-                              color: Color.fromARGB(255, 142, 204, 255)),
-                          backgroundColor: Colors.red[900]),
-                      child: Text(resEmergencyState,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w900)),
-                      onPressed: () {
-                        setState(() {
-                          state = States.emergency;
-                        });
-                        // need help functionality
-                      },
-                    ),
-                  ],
+                  child: Text(
+                    resImOK,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w700),
+                  ),
+                  onPressed: () {
+                    state = States.ok;
+                    sendStatus();
+                  },
                 ),
-              ),
-              ElevatedButton(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(resSend, style: const TextStyle(fontSize: 25)),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 5),
-                      child: Icon(Icons.send),
-                    )
-                  ],
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red,
+                    minimumSize: Size(size.width * .9, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    side: const BorderSide(
+                      color: Colors.red,
+                      width: 2,
+                    ),
+                    elevation: 2,
+                  ),
+                  child: Text(
+                    resEmergencyState,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w700),
+                  ),
+                  onPressed: () {
+                    state = States.emergency;
+                    sendStatus();
+                  },
                 ),
-                onPressed: () {
-                  sendStatus();
-                },
-              ),
-              Expanded(child: Container()),
-            ],
-          )),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.orange,
+                    minimumSize: Size(size.width * .9, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    side: const BorderSide(
+                      color: Colors.orange,
+                      width: 2,
+                    ),
+                    elevation: 2,
+                  ),
+                  child: Text(
+                    resINeedHelp,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w700),
+                  ),
+                  onPressed: () {
+                    state = States.needHelp;
+                    sendStatus();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -129,35 +130,34 @@ class _MyStatusState extends State<MyStatus> {
       return;
     }
     var loc = GeoLocation(
-      lastLocation?.latitude?.toString() ?? '',
-      lastLocation?.longitude?.toString() ?? '',
+      lastLocation?.latitude.toString() ?? '',
+      lastLocation?.longitude.toString() ?? '',
     );
-    var message = MobileMessage(
-      DateTime.now().toUtc(),
-      tfcomment.text,
-      loc,
-      state,
-    );
+    MobileMessage? message =
+        MobileMessage(DateTime.now().toUtc(), tfcomment.text, loc, state);
 
     try {
       var body = jsonEncode(message);
-      var ctx = showErrorMessage(context, resPleaseWait, loading: true);
+      setState(() => loading = true);
       var response = await http.post(
         Uri.parse('$serverURI/API/Mobile/Send'),
         headers: httpHeader(),
         body: body,
       );
-      // Navigator.of(ctx).pop();
-
+      setState(() => loading = false);
       if (response.statusCode == 200) {
+        tfcomment.clear();
         showErrorMessage(context, resStatusSent);
-      } else {
-        handleResponseError(context, response);
+        message = null;
       }
+      handleResponseError(context, response);
     } catch (e) {
-      Navigator.of(context).pop();
+      setState(() => loading = false);
       showErrorMessage(context, resUnexpectedError);
     }
-    // getAllMessages(context);
+    if (message != null) {
+      IsolateNameServer.lookupPortByName(backgroundIsolate)
+          ?.send(message.toJson());
+    }
   }
 }

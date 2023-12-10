@@ -1,43 +1,41 @@
-import 'package:location/location.dart';
 import 'package:wh/all.dart';
 
-Future<void> getPermissions() async {
-  Location location = Location();
+initLocation() {
+  try {
+    getPermition();
 
-  bool serviceEnabled;
-  PermissionStatus permissionGranted;
-
-  serviceEnabled = await location.serviceEnabled();
-  if (!serviceEnabled) {
-    serviceEnabled = await location.requestService();
-    if (!serviceEnabled) {
-      return;
-    }
-  }
-
-  permissionGranted = await location.hasPermission();
-  if (permissionGranted == PermissionStatus.denied) {
-    permissionGranted = await location.requestPermission();
-    if (permissionGranted != PermissionStatus.granted) {
-      return;
-    }
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position? position) {
+      lastLocation = position ?? lastLocation;
+    });
+  } catch (e) {
+    print(e);
   }
 }
 
-Future<void> initLocation() async {
-  try {
-    Location location = Location();
+Future<void> getPermition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
 
-    getPermissions();
-    try {
-      await location.enableBackgroundMode(enable: true);
-    } on Exception catch (e) {
-      // TODO
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      return Future.error('Location permissions are denied');
     }
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      lastLocation = currentLocation;
-    });
-  } on Exception catch (e) {
-    // TODO
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever, handle appropriately.
+    return Future.error('لم نتمكن من الحصول على صلاحية تحديد الموقع');
   }
 }

@@ -5,7 +5,6 @@ export 'package:flutter/services.dart';
 export 'package:workmanager/workmanager.dart';
 export 'package:flutter/foundation.dart';
 export 'package:platform_device_id_v3/platform_device_id.dart';
-export 'package:wakelock/wakelock.dart';
 export 'package:wh/services/all.dart';
 export 'package:wh/screens/all.dart';
 export 'package:wh/globals/all.dart';

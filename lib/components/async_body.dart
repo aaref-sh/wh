@@ -21,41 +21,43 @@ class _AsyncBodyState extends State<AsyncBody> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: widget.appBar,
-      floatingActionButton: widget.floatingActionButton,
-      floatingActionButtonLocation: widget.floatingActionButtonLocation,
-      body: Stack(
-        children: [
-          widget.child,
-          widget.loading
-              ? Container(
-                  width: size.width,
-                  height: size.height,
-                  color: Colors.black12,
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      width: size.width * .8,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const CircularProgressIndicator(),
-                            Text(resPleaseWait),
-                          ],
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: widget.appBar,
+          floatingActionButton: widget.floatingActionButton,
+          floatingActionButtonLocation: widget.floatingActionButtonLocation,
+          body: Stack(
+            children: [
+              widget.child,
+              widget.loading
+                  ? Container(
+                      width: size.width,
+                      height: size.height,
+                      color: Colors.black12,
+                      child: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          width: size.width * .8,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const CircularProgressIndicator(),
+                                Text(resPleaseWait),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                )
-              : Container()
-        ],
-      ),
-    );
+                    )
+                  : Container()
+            ],
+          ),
+        ));
   }
 }

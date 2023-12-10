@@ -1,6 +1,5 @@
 import 'dart:ui';
 import '../all.dart';
-import 'new_home.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,7 +17,6 @@ class NavigationExample extends StatefulWidget {
   State<NavigationExample> createState() => _NavigationExampleState();
 }
 
-const String mainIsolate = "workmanager";
 void initListinPort() {
   ReceivePort port = ReceivePort();
   IsolateNameServer.registerPortWithName(port.sendPort, mainIsolate);
@@ -41,6 +39,9 @@ class _NavigationExampleState extends State<NavigationExample> {
   void initState() {
     super.initState();
     initBackgroundAndLocation();
+    getAdminMessagesFromServer(context).then((value) {
+      if (value?.isNotEmpty ?? false) setState(() => pageIndex = 1);
+    });
   }
 
   @override
@@ -76,7 +77,6 @@ class _NavigationExampleState extends State<NavigationExample> {
         const NewMyStatus(),
         const ManagementMessages(),
         const ChatScreen(),
-        const MyStatus(),
       ][pageIndex],
     );
   }
