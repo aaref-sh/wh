@@ -26,8 +26,9 @@ Future<HubConnection> signalRConnection() async {
       await hubConnection.start();
       bindEvents(hubConnection);
     } catch (e) {
-      notify('Connecting failed $serverURI/$hub');
+      notify(resConnectingToServerFailed);
       print(e);
+      return await signalRConnection();
     }
   }
   return hubConnection;
@@ -43,7 +44,7 @@ void bindEvents(HubConnection? hubConnection) {
     // notify('Connection closed');
   });
   hubConnection?.onreconnected((connectionId) {
-    // notify('Connection restored');
+    notify(resConnectionRestored);
   });
   hubConnection?.onreconnecting((error) {
     // notify(resReconnecting);

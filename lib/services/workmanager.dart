@@ -9,11 +9,14 @@ var pendingMessages = <MobileMessage>[];
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     try {
+      var startedAt = DateTime.now();
       String x = inputData?['pendingMessages'] ?? '';
-      pendingMessages = x
-          .split("\$#\$")
-          .map((e) => MobileMessage.fromMap(json.decode(e)))
-          .toList();
+      if (x.isNotEmpty) {
+        pendingMessages = x
+            .split(seperator)
+            .map((e) => MobileMessage.fromMap(json.decode(e)))
+            .toList();
+      }
 
       WidgetsFlutterBinding.ensureInitialized();
       IsolateNameServer.removePortNameMapping(backgroundIsolate);
@@ -46,13 +49,18 @@ void callbackDispatcher() {
         try {
           await Future.delayed(const Duration(milliseconds: 100));
           await resendFailedStatusMessages();
-          await Future.delayed(const Duration(milliseconds: 100));
+          if (DateTime.now().difference(startedAt).inMinutes > 30) {
+            throw Exception("ReRunNewWorkManager");
+          }
         } catch (e) {
           await hubConnection.stop();
+          var stringifyedList = pendingMessages
+              .map((e) => jsonEncode(e.toJson()))
+              .join(seperator);
+          await initNewWorkmanager(stringifyedList);
           break;
         }
       }
-      var ss = pendingMessages.map((e) => jsonEncode(e.toJson())).join("\$#\$");
     } on Exception catch (e) {
       print(e);
     }
@@ -89,11 +97,23 @@ Future<void> resendFailedStatusMessages() async {
 }
 
 Future<void> initWorkmanager() async {
-  Workmanager().initialize(callbackDispatcher);
-  Workmanager().registerPeriodicTask(
+  await Workmanager().initialize(callbackDispatcher);
+  await Workmanager().registerPeriodicTask(
     "1",
     signalRTask,
-    frequency: const Duration(minutes: 60),
+    frequency: const Duration(minutes: 35),
     tag: "signalR",
+    existingWorkPolicy: ExistingWorkPolicy.keep,
+  );
+}
+
+Future<void> initNewWorkmanager(String pendingMessages) async {
+  await Workmanager().initialize(callbackDispatcher);
+  await Workmanager().registerOneOffTask(
+    "1",
+    signalRTask,
+    inputData: {'pendingMessages': pendingMessages},
+    tag: "signalR",
+    existingWorkPolicy: ExistingWorkPolicy.replace,
   );
 }

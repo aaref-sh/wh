@@ -34,3 +34,5 @@ var resHome = 'الرئيسية';
 var resNoLocationProvided = 'لا يتوفر موقع';
 var resLicatingFailed = 'فشل تحديد الموقع';
 var resSendingToManagement = 'جار الإرسال للإدارة';
+const resConnectingToServerFailed = "فشل الاتصال بالخادم";
+const resConnectionRestored = "استعدنا الاتصال بالخادم";

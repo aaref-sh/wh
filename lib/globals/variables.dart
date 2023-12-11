@@ -20,3 +20,5 @@ const messagesPageSize = 20;
 const String mainIsolate = "workmanager";
 const signalRTask = "signalRTask";
 const backgroundIsolate = "backgroundIsolate";
+
+const seperator = "\$#\$";

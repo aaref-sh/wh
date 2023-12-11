@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     if (token != null) {
-      navigateToHome(context);
+      navigateTo(context);
     }
     var size = MediaQuery.of(context).size;
     return AsyncBody(
@@ -118,9 +118,9 @@ class _LoginState extends State<Login> {
   }
 }
 
-void navigateToHome(context) {
+void navigateTo(context, {Widget? to}) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => const HomePage()));
+        context, MaterialPageRoute(builder: (_) => to ?? const HomePage()));
   });
 }
