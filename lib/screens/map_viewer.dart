@@ -35,7 +35,7 @@ class _MapViewerState extends State<MapViewer> {
             mapController: mapcontroller,
             options: MapOptions(
               center: location,
-              zoom: 16,
+              zoom: mapDefaultZoom.toDouble(),
             ),
             children: [
               TileLayer(
@@ -78,7 +78,7 @@ class _MapViewerState extends State<MapViewer> {
                       color: Color.fromARGB(185, 0, 0, 0),
                     ),
                     onPressed: () {
-                      mapcontroller.move(defaultLocation(), 16);
+                      moveToMarker();
                     },
                   ),
                   TextButton(
@@ -101,13 +101,29 @@ class _MapViewerState extends State<MapViewer> {
     );
   }
 
+  void moveToMarker() {
+    smooooooooth(defaultLocation());
+  }
+
   void showMyLocation() {
     if (lastLocation == null) {
       Fluttertoast.showToast(msg: resLicatingFailed);
       return;
     }
-    mapcontroller.move(
-        LatLng(lastLocation!.latitude, lastLocation!.longitude), 16);
+    smooooooooth(LatLng(lastLocation!.latitude, lastLocation!.longitude));
+  }
+
+  Future<void> smooooooooth(LatLng to) async {
+    var lat = (mapcontroller.center.latitude - to.latitude) / mapSmoothRate;
+    var lon = (mapcontroller.center.longitude - to.longitude) / mapSmoothRate;
+    var zom = (mapcontroller.zoom - mapDefaultZoom) / mapSmoothRate;
+    for (int i = 0; i < mapSmoothRate; i++) {
+      var center = LatLng(mapcontroller.center.latitude - lat,
+          mapcontroller.center.longitude - lon);
+      var zoom = mapcontroller.zoom - zom;
+      mapcontroller.move(center, zoom);
+      await Future.delayed(Duration(milliseconds: 4));
+    }
   }
 
   Marker myMarker() {

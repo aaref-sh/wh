@@ -22,3 +22,5 @@ const signalRTask = "signalRTask";
 const backgroundIsolate = "backgroundIsolate";
 
 const seperator = "\$#\$";
+const mapSmoothRate = 30;
+const mapDefaultZoom = 16;
