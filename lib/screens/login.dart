@@ -13,9 +13,6 @@ class _LoginState extends State<Login> {
   bool loading = true;
 
   Future<void> initEveryThing(context) async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await initToken();
-    // Configure the plugin
     try {
       deviceId = await PlatformDeviceId.getDeviceId ?? deviceId;
     } catch (e) {}
@@ -35,63 +32,93 @@ class _LoginState extends State<Login> {
     }
     var size = MediaQuery.of(context).size;
     return AsyncBody(
-      appBar: AppBar(title: Text(resLoginBtn)),
+      // appBar: AppBar(title: Text(resLoginBtn)),
       loading: loading,
-      child: SingleChildScrollView(
-          child: Center(
-        child: Container(
-          width: size.width * .85,
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              SizedBox(height: size.height * .2),
-              Row(
+      child: Stack(
+        children: [
+          Positioned(
+            top: 50,
+            child: Image.asset(
+              'assets/Splash.png',
+              width: size.width,
+              fit: BoxFit.fitWidth,
+              opacity: const AlwaysStoppedAnimation(0.1),
+            ),
+          ),
+          Center(
+            child: Container(
+              width: size.width * .85,
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: TextEditingController(text: deviceId),
-                      textAlign: TextAlign.center,
-                      readOnly: true,
-                      enabled: false,
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: Color.fromARGB(255, 173, 173, 173))
+                        // color: Colors.white,
+                        ),
+                    margin: const EdgeInsets.only(
+                        left: 10, right: 10, top: 2, bottom: 2),
+                    padding: EdgeInsets.only(left: 10, right: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(deviceId, style: TextStyle(fontSize: 18)),
+                            const SizedBox(width: 5),
+                            IconButton(
+                                icon: const Icon(Icons.copy),
+                                onPressed: () async {
+                                  await Clipboard.setData(
+                                      ClipboardData(text: deviceId));
+
+                                  Fluttertoast.showToast(msg: resCopied);
+                                }),
+                          ],
+                        ),
+                        Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              color: const Color.fromARGB(255, 173, 173, 173),
+                            )),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            textDirection: TextDirection.ltr,
+                            onTapOutside: (event) {
+                              FocusScope.of(context).unfocus();
+                            },
+                            controller: tfpass,
+                            obscureText: true,
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            decoration: InputDecoration(
+                              labelText: resSecretCode,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            tryLogin(context);
+                          },
+                          child: Text(resLoginBtn),
+                        ),
+                      ],
                     ),
                   ),
-                  IconButton(
-                      onPressed: () async {
-                        await Clipboard.setData(ClipboardData(text: deviceId));
-
-                        Fluttertoast.showToast(msg: resCopied);
-                      },
-                      icon: const Icon(Icons.copy)),
                 ],
               ),
-              TextField(
-                controller: tfpass,
-                obscureText: true,
-                enableSuggestions: false,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  labelText: resSecretCode,
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  tryLogin(context);
-                },
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(resLoginBtn),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.login),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      )),
+        ],
+      ),
     );
   }
 

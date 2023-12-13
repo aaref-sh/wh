@@ -36,8 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   awesome_notifications_core: ^0.8.0
-  awesome_notifications: any
-  wakelock: ^0.6.2
+  awesome_notifications: any 
   workmanager: ^0.5.1
   platform_device_id_v3: ^1.0.0
   http: ^0.13.6

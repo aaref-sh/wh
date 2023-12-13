@@ -36,6 +36,7 @@ class _MapViewerState extends State<MapViewer> {
             options: MapOptions(
               center: location,
               zoom: mapDefaultZoom.toDouble(),
+              maxZoom: 18.3,
             ),
             children: [
               TileLayer(
