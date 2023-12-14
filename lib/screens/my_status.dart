@@ -1,4 +1,7 @@
+import 'dart:math';
 import 'dart:ui';
+
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import '../all.dart';
 import 'package:http/http.dart' as http;
@@ -14,10 +17,15 @@ class _NewMyStatusState extends State<NewMyStatus> {
   var state = States.ok;
   bool loading = false;
   var tfcomment = TextEditingController();
+
+  var timerIntervalEditBoxctrl = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    timerIntervalEditBoxctrl.text = timeInterval.toString();
     var size = MediaQuery.of(context).size;
     return AsyncBody(
+      drawer: mainPageDrawer(context),
       appBar: AppBar(title: Text(resHome)),
       loading: loading,
       child: Column(
@@ -27,6 +35,9 @@ class _NewMyStatusState extends State<NewMyStatus> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              onTapOutside: (event) {
+                FocusScope.of(context).unfocus();
+              },
               controller: tfcomment,
               keyboardType: TextInputType.multiline,
               maxLines: 5,
@@ -122,6 +133,177 @@ class _NewMyStatusState extends State<NewMyStatus> {
         ],
       ),
     );
+  }
+
+  Drawer mainPageDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Color(mainColor),
+            ),
+            child: Center(
+                child: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  color: Colors.white54,
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 173, 173, 173),
+                  ),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.settings,
+                        size: 22,
+                        color: Colors.black87,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        'الإعدادات',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context)),
+                ],
+              ),
+            )),
+          ),
+          ListTile(
+            title: const Text(resTitleAppColor),
+            trailing: IconButton(
+                onPressed: () {
+                  changeAppColorDialog(context);
+                },
+                icon: Icon(
+                  Icons.color_lens,
+                  color: Color(mainColor),
+                )),
+          ),
+          ExpansionTile(
+            title: const Text(resTimerIntervalOptionTitle),
+            trailing: SizedBox(
+                width: 70,
+                child: TextField(
+                  textDirection: TextDirection.ltr,
+                  keyboardType: TextInputType.number,
+                  controller: timerIntervalEditBoxctrl,
+                  onTapOutside: (event) {
+                    FocusScope.of(context).unfocus();
+                    var val = int.tryParse(timerIntervalEditBoxctrl.text) ?? 30;
+                    val = min(val, 600);
+                    timeInterval = val;
+                    prefs.set('timeInterval', val);
+                  },
+                  onChanged: (value) {
+                    var x = int.tryParse(value) ?? 30;
+                    x = min(x, 600);
+                  },
+                  autocorrect: false,
+                )),
+            children: const [Text(resTimerIntervalOptionDesc)],
+          ),
+          ExpansionTile(
+            title: const Text(resSignalRNotificationsOptionTitle),
+            trailing: Switch(
+                value: signalRConnectionNotifications,
+                onChanged: (value) {
+                  changeSignalRNotifications(value);
+                }),
+            children: const [Text(resSignalRNotificationsOptionDesc)],
+          ),
+          ExpansionTile(
+            title: const Text(resChatsNotificationsOptionTitle),
+            trailing: Switch(
+                value: chatsNotifications,
+                onChanged: (value) {
+                  changeChatsNotifications(value);
+                }),
+            children: const [Text(resChatsNotificationsOptionDesc)],
+          ),
+          ExpansionTile(
+              title: const Text(resResendNotificationsOptionTitle),
+              trailing: Switch(
+                  value: resendFailedStatusNotifications,
+                  onChanged: (value) {
+                    changeResendNotifications(value);
+                  }),
+              children: const [Text(resResendNotificationsOptionDesc)]),
+        ],
+      ),
+    );
+  }
+
+  Future<void> changeSignalRNotifications(bool value) async {
+    if (await prefs.set('signalrnotifications', value)) {
+      setState(() => signalRConnectionNotifications = value);
+    }
+  }
+
+  Future<void> changeResendNotifications(bool value) async {
+    if (await prefs.set('resendnotifications', value)) {
+      setState(() => resendFailedStatusNotifications = value);
+    }
+  }
+
+  Future<void> changeChatsNotifications(bool value) async {
+    if (await prefs.set('chatsnotifications', value)) {
+      setState(() => chatsNotifications = value);
+    }
+  }
+
+  Future<dynamic> changeAppColorDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        Color pickerColor = appColor();
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: pickerColor,
+              onColorChanged: (color) => setState(() => pickerColor = color),
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text(resConfirm),
+              onPressed: () {
+                setAppColor(pickerColor);
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text(resCancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> setAppColor(Color pickerColor) async {
+    if (await prefs.set('color', mainColor)) {
+      mainColor = pickerColor.value;
+    }
+    mainPageState!(() {});
+    setState(() {});
   }
 
   Future<void> sendStatus() async {

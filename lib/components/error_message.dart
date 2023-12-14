@@ -14,9 +14,7 @@ void showErrorMessage(BuildContext context, String message,
             ),
           ),
         ),
-        contentPadding: const EdgeInsets.only(
-          top: 10.0,
-        ),
+        contentPadding: const EdgeInsets.only(top: 10.0),
         content: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,10 +32,8 @@ void showErrorMessage(BuildContext context, String message,
             loading
                 ? Container()
                 : Container(
-                    width: double.infinity,
                     height: 60,
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
+                    child: TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },

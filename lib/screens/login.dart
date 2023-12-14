@@ -27,9 +27,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    if (token != null) {
-      navigateTo(context);
-    }
+    if (token?.isNotEmpty ?? false) navigateTo(context);
+
     var size = MediaQuery.of(context).size;
     return AsyncBody(
       // appBar: AppBar(title: Text(resLoginBtn)),

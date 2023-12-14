@@ -49,7 +49,8 @@ void callbackDispatcher() {
         try {
           await Future.delayed(const Duration(milliseconds: 100));
           await resendFailedStatusMessages();
-          if (DateTime.now().difference(startedAt).inMinutes > 30) {
+          if (DateTime.now().difference(startedAt).inMinutes >
+              timeInterval - 5) {
             throw Exception("ReRunNewWorkManager");
           }
         } catch (e) {
@@ -101,7 +102,7 @@ Future<void> initWorkmanager() async {
   await Workmanager().registerPeriodicTask(
     "1",
     signalRTask,
-    frequency: const Duration(minutes: 35),
+    frequency: Duration(minutes: timeInterval),
     tag: "signalR",
     existingWorkPolicy: ExistingWorkPolicy.keep,
   );

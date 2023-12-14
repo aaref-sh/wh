@@ -7,9 +7,11 @@ class AsyncBody extends StatefulWidget {
       this.loading = false,
       required this.child,
       this.floatingActionButton,
-      this.floatingActionButtonLocation});
+      this.floatingActionButtonLocation,
+      this.drawer});
   final Widget child;
   final bool loading;
+  final Widget? drawer;
   final PreferredSizeWidget? appBar;
   final FloatingActionButton? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
@@ -22,42 +24,44 @@ class _AsyncBodyState extends State<AsyncBody> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: widget.appBar,
-          floatingActionButton: widget.floatingActionButton,
-          floatingActionButtonLocation: widget.floatingActionButtonLocation,
-          body: Stack(
-            children: [
-              widget.child,
-              widget.loading
-                  ? Container(
-                      width: size.width,
-                      height: size.height,
-                      color: Colors.black12,
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          width: size.width * .8,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const CircularProgressIndicator(),
-                                Text(resPleaseWait),
-                              ],
-                            ),
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        drawer: widget.drawer,
+        appBar: widget.appBar,
+        floatingActionButton: widget.floatingActionButton,
+        floatingActionButtonLocation: widget.floatingActionButtonLocation,
+        body: Stack(
+          children: [
+            widget.child,
+            widget.loading
+                ? Container(
+                    width: size.width,
+                    height: size.height,
+                    color: Colors.black12,
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        width: size.width * .8,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const CircularProgressIndicator(),
+                              Text(resPleaseWait),
+                            ],
                           ),
                         ),
                       ),
-                    )
-                  : Container()
-            ],
-          ),
-        ));
+                    ),
+                  )
+                : Container()
+          ],
+        ),
+      ),
+    );
   }
 }

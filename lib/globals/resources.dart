@@ -36,3 +36,19 @@ var resLicatingFailed = 'فشل تحديد الموقع';
 var resSendingToManagement = 'جار الإرسال للإدارة';
 const resConnectingToServerFailed = "فشل الاتصال بالخادم";
 const resConnectionRestored = "استعدنا الاتصال بالخادم";
+
+const resConfirm = 'تأكيد';
+const resCancel = 'إلغاء';
+const resResendNotificationsOptionDesc =
+    'إظهار تنبيهات بعد إرسال رسائل الحالة التي فشل إرسالها للخادم بسبب مشاكل الشبكة';
+const resResendNotificationsOptionTitle = 'تنبيه إعادة إرسال الحالة';
+const resChatsNotificationsOptionDesc =
+    'إظهار تنبيهات عند وصول رسالة جديدة في الدردشة';
+const resChatsNotificationsOptionTitle = ' إشعارات الدردشة';
+const resSignalRNotificationsOptionDesc =
+    'إظهار تنبيهات فشل الاتصال وإعادة الاتصال';
+const resSignalRNotificationsOptionTitle = ' تنبيهات الاتصال';
+const resTimerIntervalOptionDesc =
+    'الزمن الذي تستغرقه الخدمة في الخلفية قبل إعادة تشغيل نفسها (بالدقائق)';
+const resTimerIntervalOptionTitle = ' عمر الخدمة بالخلفية';
+const resTitleAppColor = ' لون التطبيق';

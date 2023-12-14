@@ -12,6 +12,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> loadToken() async {
     await initToken();
+    await loadSettings();
     setState(() => loaded = true);
   }
 

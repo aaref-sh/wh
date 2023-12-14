@@ -34,6 +34,8 @@ Future<void> initBackgroundAndLocation() async {
   resumeCallBack();
 }
 
+void Function(void Function())? mainPageState;
+
 class _NavigationExampleState extends State<NavigationExample> {
   @override
   void initState() {
@@ -42,42 +44,46 @@ class _NavigationExampleState extends State<NavigationExample> {
     getAdminMessagesFromServer(context).then((value) {
       if (value?.isNotEmpty ?? false) setState(() => pageIndex = 1);
     });
+    mainPageState = setState;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            pageIndex = index;
-          });
-        },
-        // indicatorColor: Colors.amber[800],
-        selectedIndex: pageIndex,
-        destinations: <Widget>[
-          NavigationDestination(
-            selectedIcon: const Icon(Icons.home),
-            icon: const Icon(Icons.home_outlined),
-            label: resMyStatus,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.notification_important_outlined),
-            selectedIcon: const Icon(Icons.notification_important_rounded),
-            label: resManagementMessages,
-          ),
-          NavigationDestination(
-            selectedIcon: const Icon(Icons.chat),
-            icon: const Icon(Icons.chat_outlined),
-            label: resChat,
-          ),
-        ],
+    return MaterialApp(
+      title: 'سلامة',
+      theme: ThemeData(
+        primarySwatch: appColor().toMaterialColor(),
       ),
-      body: <Widget>[
-        const NewMyStatus(),
-        const ManagementMessages(),
-        const ChatScreen(),
-      ][pageIndex],
+      home: Scaffold(
+        bottomNavigationBar: NavigationBar(
+          onDestinationSelected: (int index) =>
+              setState(() => pageIndex = index),
+          // indicatorColor: Colors.amber[800],
+          selectedIndex: pageIndex,
+          destinations: <Widget>[
+            NavigationDestination(
+              selectedIcon: const Icon(Icons.home),
+              icon: const Icon(Icons.home_outlined),
+              label: resMyStatus,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.notification_important_outlined),
+              selectedIcon: const Icon(Icons.notification_important_rounded),
+              label: resManagementMessages,
+            ),
+            NavigationDestination(
+              selectedIcon: const Icon(Icons.chat),
+              icon: const Icon(Icons.chat_outlined),
+              label: resChat,
+            ),
+          ],
+        ),
+        body: <Widget>[
+          const NewMyStatus(),
+          const ManagementMessages(),
+          const ChatScreen(),
+        ][pageIndex],
+      ),
     );
   }
 }

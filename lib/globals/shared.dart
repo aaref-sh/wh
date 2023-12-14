@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../all.dart';
 import 'package:http/http.dart' as http;
 
@@ -78,3 +80,69 @@ var rtlRegex = RegExp(r'[\u0591-\u07FF]');
 bool isRtl(String text) {
   return rtlRegex.hasMatch(text);
 }
+
+int timeInterval = 35;
+int mainColor = 0xFF2196F3;
+bool signalRConnectionNotifications = true;
+bool resendFailedStatusNotifications = true;
+bool chatsNotifications = true;
+
+Future<void> loadSettings() async {
+  mainColor = await getOrSet('color', mainColor);
+  timeInterval = await getOrSet('timeInterval', timeInterval);
+  signalRConnectionNotifications = await getOrSet('signalrnotifications', true);
+  resendFailedStatusNotifications = await getOrSet('resendnotifications', true);
+  chatsNotifications = await getOrSet('chatsnotifications', true);
+}
+
+Future<dynamic> getOrSet(String key, defaultValue) async {
+  var res = prefs.get(key);
+  if (res == null) {
+    await prefs.set(key, defaultValue);
+    res = getOrSet(key, defaultValue);
+  }
+  return res;
+}
+
+extension SharedPreferencesExt on SharedPreferences {
+  Future<bool> set(String key, value) async {
+    await initSharedPreferences();
+    if (value is String) {
+      return await prefs.setString(key, value);
+    } else if (value is int) {
+      return await prefs.setInt(key, value);
+    } else if (value is double) {
+      return await prefs.setDouble(key, value);
+    } else if (value is bool) {
+      return await prefs.setBool(key, value);
+    } else if (value is List<String>) {
+      return await prefs.setStringList(key, value);
+    }
+    return false;
+  }
+}
+
+extension ColorsExt on Color {
+  MaterialColor toMaterialColor() {
+    final int red = this.red;
+    final int green = this.green;
+    final int blue = this.blue;
+
+    final Map<int, Color> shades = {
+      50: Color.fromRGBO(red, green, blue, .1),
+      100: Color.fromRGBO(red, green, blue, .2),
+      200: Color.fromRGBO(red, green, blue, .3),
+      300: Color.fromRGBO(red, green, blue, .4),
+      400: Color.fromRGBO(red, green, blue, .5),
+      500: Color.fromRGBO(red, green, blue, .6),
+      600: Color.fromRGBO(red, green, blue, .7),
+      700: Color.fromRGBO(red, green, blue, .8),
+      800: Color.fromRGBO(red, green, blue, .9),
+      900: Color.fromRGBO(red, green, blue, 1),
+    };
+
+    return MaterialColor(value, shades);
+  }
+}
+
+Color appColor() => Color(mainColor);

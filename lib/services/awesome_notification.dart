@@ -150,7 +150,9 @@ class NotificationService {
   }
 }
 
-void notify(String? msg) => AwesomeNotifications().createNotification(
+void notify(String? msg) {
+  if (signalRConnectionNotifications) {
+    AwesomeNotifications().createNotification(
         content: NotificationContent(
       id: 10,
       channelKey: 'high_importance_channel',
@@ -159,15 +161,25 @@ void notify(String? msg) => AwesomeNotifications().createNotification(
       title: msg,
       body: msg,
     ));
+  }
+}
 
-void notifyChat(Message messag) => NotificationService.showNotification(
-    title: messag.sender,
-    body: messag.message,
-    channelKey: 'messages_channel',
-    groupKey: 'chat_group');
+void notifyChat(Message messag) {
+  if (chatsNotifications) {
+    NotificationService.showNotification(
+        title: messag.sender,
+        body: messag.message,
+        channelKey: 'messages_channel',
+        groupKey: 'chat_group');
+  }
+}
 
-void notifyStatus() => NotificationService.showNotification(
-    title: 'تم إرسال الحالة للإدارة',
-    body: 'تم إرسال الحالة للإدارة',
-    channelKey: 'status_channel',
-    groupKey: 'status_group');
+void notifyStatus() {
+  if (resendFailedStatusNotifications) {
+    NotificationService.showNotification(
+        title: 'تم إرسال الحالة للإدارة',
+        body: 'تم إرسال الحالة للإدارة',
+        channelKey: 'status_channel',
+        groupKey: 'status_group');
+  }
+}

@@ -53,7 +53,7 @@ class _ManagementMessagesState extends State<ManagementMessages> {
                     newMessagesList.contains(alerts[index].id)
                         ? Icons.mark_email_unread_outlined
                         : Icons.mark_email_read,
-                    color: Colors.blue),
+                    color: appColor()),
                 title: Text(
                   txt.length > 50 ? '${txt.substring(0, 50)}...' : txt,
                 ),
