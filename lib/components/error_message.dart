@@ -31,7 +31,7 @@ void showErrorMessage(BuildContext context, String message,
             ),
             loading
                 ? Container()
-                : Container(
+                : SizedBox(
                     height: 60,
                     child: TextButton(
                       onPressed: () {

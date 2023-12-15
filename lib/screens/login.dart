@@ -56,18 +56,19 @@ class _LoginState extends State<Login> {
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                            color: Color.fromARGB(255, 173, 173, 173))
+                            color: const Color.fromARGB(255, 173, 173, 173))
                         // color: Colors.white,
                         ),
                     margin: const EdgeInsets.only(
                         left: 10, right: 10, top: 2, bottom: 2),
-                    padding: EdgeInsets.only(left: 10, right: 20),
+                    padding: const EdgeInsets.only(left: 10, right: 20),
                     child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(deviceId, style: TextStyle(fontSize: 18)),
+                            Text(deviceId,
+                                style: const TextStyle(fontSize: 18)),
                             const SizedBox(width: 5),
                             IconButton(
                                 icon: const Icon(Icons.copy),

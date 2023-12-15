@@ -4,61 +4,54 @@ import 'package:wh/all.dart';
 import 'package:http/http.dart' as http;
 
 var pendingMessages = <MobileMessage>[];
-
+var stringifiedPendingMessages = '';
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     try {
-      var startedAt = DateTime.now();
-      String x = inputData?['pendingMessages'] ?? '';
-      if (x.isNotEmpty) {
-        pendingMessages = x
+      WidgetsFlutterBinding.ensureInitialized();
+      IsolateNameServer.removePortNameMapping(backgroundIsolate);
+
+      await Future.wait([
+        initToken(),
+        loadSettings(),
+        initLocation(),
+        NotificationService.initializeNotification(),
+      ]);
+      if (stringifiedPendingMessages.isNotEmpty) {
+        pendingMessages = stringifiedPendingMessages
             .split(seperator)
             .map((e) => MobileMessage.fromMap(json.decode(e)))
             .toList();
       }
 
-      WidgetsFlutterBinding.ensureInitialized();
-      IsolateNameServer.removePortNameMapping(backgroundIsolate);
-      await initToken();
-      await initLocation();
-      await NotificationService.initializeNotification();
-
-      IsolateNameServer.lookupPortByName(mainIsolate)?.send(1);
-
       var port = ReceivePort();
       IsolateNameServer.registerPortWithName(port.sendPort, backgroundIsolate);
-      late HubConnection? hubConnection;
-      // Listen for messages from the background isolate
+      // if app is oppened ,this will turn of the messages notifications
+      IsolateNameServer.lookupPortByName(mainIsolate)?.send(1);
+
+      HubConnection hubConnection = signalRConnection();
+
       port.listen((msg) {
-        if (msg == 1) {
-          notifyOnNewMessage = true;
-        } else if (msg == 0) {
-          notifyOnNewMessage = false;
+        if (msg is int) {
+          notifyOnNewMessage = msg == 1;
+        } else if (msg is Map<String, dynamic>) {
+          var message = MobileMessage.fromMap(msg);
+          pendingMessages.add(message);
         } else {
-          if (msg is Map<String, dynamic>) {
-            var message = MobileMessage.fromMap(msg);
-            pendingMessages.add(message);
-          } else {
-            hubConnection?.invoke("Chat", args: [msg]);
-          }
+          hubConnection.invoke("Chat", args: [msg]);
         }
       });
-      hubConnection = await signalRConnection();
+
       while (true) {
         try {
-          await Future.delayed(const Duration(milliseconds: 100));
-          await resendFailedStatusMessages();
-          if (DateTime.now().difference(startedAt).inMinutes >
-              timeInterval - 5) {
-            throw Exception("ReRunNewWorkManager");
-          }
+          await Future.wait([
+            Future.delayed(const Duration(milliseconds: 100)),
+            signalRConnect(hubConnection),
+            resendFailedStatusMessages()
+          ]);
         } catch (e) {
-          await hubConnection.stop();
-          var stringifyedList = pendingMessages
-              .map((e) => jsonEncode(e.toJson()))
-              .join(seperator);
-          await initNewWorkmanager(stringifyedList);
+          hubConnection.stop();
           break;
         }
       }
@@ -89,9 +82,15 @@ Future<void> resendFailedStatusMessages() async {
           notifyStatus();
           pendingMessages.remove(message);
           i--;
+
+          var stringifiedList = pendingMessages
+              .map((e) => jsonEncode(e.toJson()))
+              .join(seperator);
+
+          await prefs.setString(pendingMessagesKey, stringifiedList);
         }
       } catch (e) {
-        // do nothing
+        // network is not available yet - do nothing
       }
     }
   } catch (e) {}
@@ -104,17 +103,5 @@ Future<void> initWorkmanager() async {
     signalRTask,
     frequency: Duration(minutes: timeInterval),
     tag: "signalR",
-    existingWorkPolicy: ExistingWorkPolicy.keep,
-  );
-}
-
-Future<void> initNewWorkmanager(String pendingMessages) async {
-  await Workmanager().initialize(callbackDispatcher);
-  await Workmanager().registerOneOffTask(
-    "1",
-    signalRTask,
-    inputData: {'pendingMessages': pendingMessages},
-    tag: "signalR",
-    existingWorkPolicy: ExistingWorkPolicy.replace,
   );
 }

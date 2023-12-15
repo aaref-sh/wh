@@ -1,8 +1,8 @@
 import 'package:wh/all.dart';
 
-initLocation() {
+Future<void> initLocation() async {
   try {
-    getPermition();
+    await getPermition();
 
     const LocationSettings locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,

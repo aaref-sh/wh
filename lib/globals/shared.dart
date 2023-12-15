@@ -81,18 +81,22 @@ bool isRtl(String text) {
   return rtlRegex.hasMatch(text);
 }
 
-int timeInterval = 35;
-int mainColor = 0xFF2196F3;
-bool signalRConnectionNotifications = true;
-bool resendFailedStatusNotifications = true;
-bool chatsNotifications = true;
-
 Future<void> loadSettings() async {
-  mainColor = await getOrSet('color', mainColor);
-  timeInterval = await getOrSet('timeInterval', timeInterval);
-  signalRConnectionNotifications = await getOrSet('signalrnotifications', true);
-  resendFailedStatusNotifications = await getOrSet('resendnotifications', true);
-  chatsNotifications = await getOrSet('chatsnotifications', true);
+  await initSharedPreferences();
+  var promises = await Future.wait([
+    getOrSet('color', mainColor),
+    getOrSet('timeInterval', timeInterval),
+    getOrSet('signalrnotifications', true),
+    getOrSet('resendnotifications', true),
+    getOrSet('chatsnotifications', true),
+    getOrSet(pendingMessagesKey, ''),
+  ]);
+  mainColor = promises[0];
+  timeInterval = promises[1];
+  signalRConnectionNotifications = promises[2];
+  resendFailedStatusNotifications = promises[3];
+  chatsNotifications = promises[4];
+  stringifiedPendingMessages = promises[5];
 }
 
 Future<dynamic> getOrSet(String key, defaultValue) async {

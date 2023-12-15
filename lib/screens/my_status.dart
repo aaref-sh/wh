@@ -146,7 +146,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
             ),
             child: Center(
                 child: Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                   color: Colors.white54,
                   border: Border.all(
@@ -177,7 +177,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
                     ],
                   ),
                   IconButton(
-                      icon: Icon(Icons.close),
+                      icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(context)),
                 ],
               ),
@@ -205,7 +205,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
                   onTapOutside: (event) {
                     FocusScope.of(context).unfocus();
                     var val = int.tryParse(timerIntervalEditBoxctrl.text) ?? 30;
-                    val = min(val, 600);
+                    val = max(min(val, 600), 15);
                     timeInterval = val;
                     prefs.set('timeInterval', val);
                   },
@@ -299,10 +299,10 @@ class _NewMyStatusState extends State<NewMyStatus> {
   }
 
   Future<void> setAppColor(Color pickerColor) async {
-    if (await prefs.set('color', mainColor)) {
+    if (await prefs.set('color', pickerColor.value)) {
       mainColor = pickerColor.value;
     }
-    mainPageState!(() {});
+    mainPageState(() {});
     setState(() {});
   }
 

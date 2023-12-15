@@ -83,12 +83,13 @@ class ChatScreenState extends State<ChatScreen> {
             decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: Color.fromARGB(255, 173, 173, 173))
+                border:
+                    Border.all(color: const Color.fromARGB(255, 173, 173, 173))
                 // color: Colors.white,
                 ),
             margin:
                 const EdgeInsets.only(left: 10, right: 10, top: 2, bottom: 2),
-            padding: EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.only(left: 10),
             child: Row(
               children: [
                 ChatTextField(controller: _controller),

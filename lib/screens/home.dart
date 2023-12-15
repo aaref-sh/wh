@@ -22,8 +22,13 @@ void initListinPort() {
   IsolateNameServer.registerPortWithName(port.sendPort, mainIsolate);
   // Listen for messages from the background isolate
   port.listen((msg) {
-    if (msg == 1) tougleNotifications(0);
-    ChatScreenState.addMessage(Message.fromMap(msg));
+    if (msg is int) {
+      if (msg == 1) {
+        tougleNotifications(0);
+      }
+    } else {
+      ChatScreenState.addMessage(Message.fromMap(msg));
+    }
   });
 }
 
@@ -34,17 +39,18 @@ Future<void> initBackgroundAndLocation() async {
   resumeCallBack();
 }
 
-void Function(void Function())? mainPageState;
+late void Function(void Function()) mainPageState;
 
 class _NavigationExampleState extends State<NavigationExample> {
   @override
   void initState() {
+    WidgetsFlutterBinding.ensureInitialized();
     super.initState();
-    initBackgroundAndLocation();
+    mainPageState = setState;
     getAdminMessagesFromServer(context).then((value) {
       if (value?.isNotEmpty ?? false) setState(() => pageIndex = 1);
     });
-    mainPageState = setState;
+    initBackgroundAndLocation();
   }
 
   @override

@@ -73,7 +73,7 @@ class _ManagementMessagesState extends State<ManagementMessages> {
                       )
                     : null,
                 expandedAlignment:
-                    isRtl(txt) ? Alignment.bottomLeft : Alignment.bottomLeft,
+                    isRtl(txt) ? Alignment.centerRight : Alignment.centerLeft,
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -119,7 +119,7 @@ class _ManagementMessagesState extends State<ManagementMessages> {
     alerts.addAll(lst);
     if (alerts.isEmpty) reload();
     moreAlerts = lst.length & messagesPageSize != 0;
-    setState(() => loading = false);
+    if (pageIndex == 1) setState(() => loading = false);
   }
 }
 

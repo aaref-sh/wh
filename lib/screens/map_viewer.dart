@@ -123,7 +123,7 @@ class _MapViewerState extends State<MapViewer> {
           mapcontroller.center.longitude - lon);
       var zoom = mapcontroller.zoom - zom;
       mapcontroller.move(center, zoom);
-      await Future.delayed(Duration(milliseconds: 4));
+      await Future.delayed(const Duration(milliseconds: 4));
     }
   }
 

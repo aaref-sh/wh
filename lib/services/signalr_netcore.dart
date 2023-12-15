@@ -8,19 +8,20 @@ var states = [
   HubConnectionState.connecting,
 ];
 
-Future<HubConnection> signalRConnection() async {
-  var hubConnection = HubConnectionBuilder()
+HubConnection signalRConnection() {
+  var hubConnectionBuilder = HubConnectionBuilder()
       .withUrl(
           '$serverURI/$hub',
           HttpConnectionOptions(
-            logMessageContent: true,
             transport: HttpTransportType.webSockets,
             accessTokenFactory: () async => token,
-            logging: (level, message) => print(message),
           ))
       .withAutomaticReconnect()
       .build();
+  return hubConnectionBuilder;
+}
 
+Future<void> signalRConnect(HubConnection hubConnection) async {
   if (!states.contains(hubConnection.state)) {
     try {
       await hubConnection.start();
@@ -28,20 +29,19 @@ Future<HubConnection> signalRConnection() async {
     } catch (e) {
       notify(resConnectingToServerFailed);
       print(e);
-      return await signalRConnection();
     }
   }
-  return hubConnection;
 }
 
 void bindEvents(HubConnection? hubConnection) {
   hubConnection?.on("Test", _test);
   hubConnection?.on("NotifyChat", _notifyChat);
+  hubConnection?.on("NotifyMobile", _notifyAlert);
   hubConnection?.onclose((error) {
     try {
       hubConnection.start();
     } catch (e) {}
-    // notify('Connection closed');
+    notify('Connection closed');
   });
   hubConnection?.onreconnected((connectionId) {
     notify(resConnectionRestored);
@@ -63,4 +63,8 @@ void _notifyChat(List<Object?>? args) {
   if (pageIndex != 2 && notifyOnNewMessage) notifyChat(msg);
   // Send a message to the main isolate
   IsolateNameServer.lookupPortByName(mainIsolate)?.send(msg.toJson());
+}
+
+void _notifyAlert(List<Object?>? args) {
+  notifyAlert();
 }

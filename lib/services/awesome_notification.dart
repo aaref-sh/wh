@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:wh/all.dart';
 
@@ -103,7 +101,6 @@ class NotificationService {
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
     debugPrint('onActionReceivedMethod');
-    final payload = receivedAction.payload ?? {};
   }
 
   static Future<void> showNotification({
@@ -183,3 +180,9 @@ void notifyStatus() {
         groupKey: 'status_group');
   }
 }
+
+void notifyAlert() => NotificationService.showNotification(
+    title: 'تنبيه إداري',
+    body: 'لديك رسالة إدارية جديدة',
+    channelKey: 'status_channel',
+    groupKey: 'status_group');

@@ -17,10 +17,17 @@ bool morePages = true;
 
 const chatPageSize = 100;
 const messagesPageSize = 20;
-const String mainIsolate = "workmanager";
+const mainIsolate = "mainIsolate";
 const signalRTask = "signalRTask";
 const backgroundIsolate = "backgroundIsolate";
 
 const seperator = "\$#\$";
 const mapSmoothRate = 30;
 const mapDefaultZoom = 16;
+
+int timeInterval = 35;
+int mainColor = 0xFF2196F3;
+bool signalRConnectionNotifications = true;
+bool resendFailedStatusNotifications = true;
+bool chatsNotifications = true;
+const pendingMessagesKey = 'pendingMessages';
