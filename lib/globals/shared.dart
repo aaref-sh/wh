@@ -150,3 +150,10 @@ extension ColorsExt on Color {
 }
 
 Color appColor() => Color(mainColor);
+
+void navigateTo(context, {Widget? to}) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => to ?? const HomePage()));
+  });
+}

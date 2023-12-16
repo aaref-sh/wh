@@ -144,10 +144,3 @@ class _LoginState extends State<Login> {
     setState(() => loading = false);
   }
 }
-
-void navigateTo(context, {Widget? to}) {
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => to ?? const HomePage()));
-  });
-}
