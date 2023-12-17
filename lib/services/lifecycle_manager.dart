@@ -21,7 +21,6 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
 
 resumeCallBack() {
   tougleNotifications(0);
-  initListinPort();
 }
 
 detachedCallBack() {

@@ -17,40 +17,48 @@ class NavigationExample extends StatefulWidget {
   State<NavigationExample> createState() => _NavigationExampleState();
 }
 
-void initListinPort() {
-  ReceivePort port = ReceivePort();
-  IsolateNameServer.registerPortWithName(port.sendPort, mainIsolate);
-  // Listen for messages from the background isolate
-  port.listen((msg) {
-    if (msg is int) {
-      if (msg == 1) {
-        tougleNotifications(0);
-      }
-    } else {
-      ChatScreenState.addMessage(Message.fromMap(msg));
-    }
-  });
-}
+late void Function(void Function()) mainPageState;
 
 Future<void> initBackgroundAndLocation() async {
   WidgetsBinding.instance.addObserver(LifecycleEventHandler());
   initLocation();
-  await initWorkmanager();
   resumeCallBack();
+  await initBackgroundService();
 }
-
-late void Function(void Function()) mainPageState;
 
 class _NavigationExampleState extends State<NavigationExample> {
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
     super.initState();
+    initListinPort();
     mainPageState = setState;
+    checkNewAlerts();
+    initBackgroundAndLocation();
+  }
+
+  void initListinPort() {
+    ReceivePort port = ReceivePort();
+    IsolateNameServer.registerPortWithName(port.sendPort, mainIsolate);
+    // Listen for messages from the background isolate
+    port.listen((msg) {
+      if (msg is int) {
+        if (msg == 1) {
+          tougleNotifications(0);
+        }
+        if (msg == 2) {
+          checkNewAlerts();
+        }
+      } else {
+        ChatScreenState.addMessage(Message.fromMap(msg));
+      }
+    });
+  }
+
+  void checkNewAlerts() {
     getAdminMessagesFromServer(context).then((value) {
       if (value?.isNotEmpty ?? false) setState(() => pageIndex = 1);
     });
-    initBackgroundAndLocation();
   }
 
   @override

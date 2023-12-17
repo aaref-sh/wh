@@ -2,7 +2,6 @@ export 'dart:convert';
 export 'package:fluttertoast/fluttertoast.dart';
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
-export 'package:workmanager/workmanager.dart';
 export 'package:flutter/foundation.dart';
 export 'package:platform_device_id_v3/platform_device_id.dart';
 export 'package:wh/services/all.dart';

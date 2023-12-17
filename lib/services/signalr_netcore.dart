@@ -67,4 +67,5 @@ void _notifyChat(List<Object?>? args) {
 
 void _notifyAlert(List<Object?>? args) {
   notifyAlert();
+  IsolateNameServer.lookupPortByName(mainIsolate)?.send(2);
 }

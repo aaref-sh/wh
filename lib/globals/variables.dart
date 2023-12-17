@@ -31,3 +31,4 @@ bool signalRConnectionNotifications = true;
 bool resendFailedStatusNotifications = true;
 bool chatsNotifications = true;
 const pendingMessagesKey = 'pendingMessages';
+const notificationId = 888;

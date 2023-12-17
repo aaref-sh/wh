@@ -96,7 +96,6 @@ Future<void> loadSettings() async {
   signalRConnectionNotifications = promises[2];
   resendFailedStatusNotifications = promises[3];
   chatsNotifications = promises[4];
-  stringifiedPendingMessages = promises[5];
 }
 
 Future<dynamic> getOrSet(String key, defaultValue) async {
