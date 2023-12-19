@@ -41,51 +41,48 @@ class _ManagementMessagesState extends State<ManagementMessages> {
                 icon: const Icon(Icons.replay_outlined))
           ],
         ),
-        body: Container(
-          padding: const EdgeInsets.all(10),
-          child: ListView.builder(
-            controller: scroller,
-            itemCount: alerts.length,
-            itemBuilder: ((context, index) {
-              var txt = alerts[index].text.replaceAll("\n", " ");
-              return ExpansionTile(
-                leading: Icon(
-                    newMessagesList.contains(alerts[index].id)
-                        ? Icons.mark_email_unread_outlined
-                        : Icons.mark_email_read,
-                    color: appColor()),
-                title: Text(
-                  txt.length > 50 ? '${txt.substring(0, 50)}...' : txt,
-                ),
-                subtitle: Text(
-                    DateFormat.yMMMd().add_jm().format(alerts[index].sendTime)),
-                trailing: alerts[index].location.latitude != null
-                    ? IconButton(
-                        icon: const Icon(Icons.location_on_rounded),
-                        onPressed: () {
-                          if (alerts[index].location.latitude == null) {
-                            Fluttertoast.showToast(msg: resNoLocationProvided);
-                            return;
-                          }
-                          viewSite(alerts[index]);
-                          // do something when the location button is pressed
-                        },
-                      )
-                    : null,
-                expandedAlignment:
-                    isRtl(txt) ? Alignment.centerRight : Alignment.centerLeft,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      alerts[index].text,
-                      style: const TextStyle(fontSize: 22),
-                    ),
+        body: ListView.builder(
+          controller: scroller,
+          itemCount: alerts.length,
+          itemBuilder: ((context, index) {
+            var txt = alerts[index].text.replaceAll("\n", " ");
+            return ExpansionTile(
+              leading: Icon(
+                  newMessagesList.contains(alerts[index].id)
+                      ? Icons.mark_email_unread_outlined
+                      : Icons.mark_email_read,
+                  color: appColor()),
+              title: Text(
+                txt.length > 50 ? '${txt.substring(0, 50)}...' : txt,
+              ),
+              subtitle: Text(
+                  DateFormat.yMMMd().add_jm().format(alerts[index].sendTime)),
+              trailing: alerts[index].location.latitude != null
+                  ? IconButton(
+                      icon: const Icon(Icons.location_on_rounded),
+                      onPressed: () {
+                        if (alerts[index].location.latitude == null) {
+                          Fluttertoast.showToast(msg: resNoLocationProvided);
+                          return;
+                        }
+                        viewSite(alerts[index]);
+                        // do something when the location button is pressed
+                      },
+                    )
+                  : null,
+              expandedAlignment:
+                  isRtl(txt) ? Alignment.centerRight : Alignment.centerLeft,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    alerts[index].text,
+                    style: const TextStyle(fontSize: 22),
                   ),
-                ],
-              );
-            }),
-          ),
+                ),
+              ],
+            );
+          }),
         ),
       ),
     );

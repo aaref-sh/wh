@@ -38,17 +38,14 @@ class _NavigationExampleState extends State<NavigationExample> {
   }
 
   void initListinPort() {
+    IsolateNameServer.removePortNameMapping(mainIsolate);
     ReceivePort port = ReceivePort();
     IsolateNameServer.registerPortWithName(port.sendPort, mainIsolate);
     // Listen for messages from the background isolate
     port.listen((msg) {
       if (msg is int) {
-        if (msg == 1) {
-          tougleNotifications(0);
-        }
-        if (msg == 2) {
-          checkNewAlerts();
-        }
+        if (msg == 1) tougleNotifications(0);
+        if (msg == 2) checkNewAlerts();
       } else {
         ChatScreenState.addMessage(Message.fromMap(msg));
       }

@@ -68,8 +68,6 @@ Future<void> onStart(ServiceInstance service) async {
     await signalRConnect(hubConnection);
     await Future.delayed(const Duration(seconds: 5));
     await resendFailedStatusMessages();
-    IsolateNameServer.lookupPortByName(mainIsolate)
-        ?.send(hubConnection.state == HubConnectionState.connected ? 3 : 4);
   }
 }
 

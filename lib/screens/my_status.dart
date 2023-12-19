@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -18,11 +17,8 @@ class _NewMyStatusState extends State<NewMyStatus> {
   bool loading = false;
   var tfcomment = TextEditingController();
 
-  var timerIntervalEditBoxctrl = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    timerIntervalEditBoxctrl.text = timeInterval.toString();
     var size = MediaQuery.of(context).size;
     return AsyncBody(
       drawer: mainPageDrawer(context),
@@ -56,7 +52,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color.fromARGB(255, 0, 184, 6),
                     minimumSize: Size(size.width * .9, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -81,7 +77,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
                 ElevatedButton(
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.red,
+                    backgroundColor: Color.fromARGB(255, 173, 12, 0),
                     minimumSize: Size(size.width * .9, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -106,7 +102,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.orange,
+                    backgroundColor: Color.fromARGB(255, 206, 123, 0),
                     minimumSize: Size(size.width * .9, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -142,7 +138,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Color(mainColor),
+              color: appColor(),
             ),
             child: Center(
                 child: Container(
@@ -191,31 +187,8 @@ class _NewMyStatusState extends State<NewMyStatus> {
                 },
                 icon: Icon(
                   Icons.color_lens,
-                  color: Color(mainColor),
+                  color: appColor(),
                 )),
-          ),
-          ExpansionTile(
-            title: const Text(resTimerIntervalOptionTitle),
-            trailing: SizedBox(
-                width: 70,
-                child: TextField(
-                  textDirection: TextDirection.ltr,
-                  keyboardType: TextInputType.number,
-                  controller: timerIntervalEditBoxctrl,
-                  onTapOutside: (event) {
-                    FocusScope.of(context).unfocus();
-                    var val = int.tryParse(timerIntervalEditBoxctrl.text) ?? 30;
-                    val = max(min(val, 600), 15);
-                    timeInterval = val;
-                    prefs.set('timeInterval', val);
-                  },
-                  onChanged: (value) {
-                    var x = int.tryParse(value) ?? 30;
-                    x = min(x, 600);
-                  },
-                  autocorrect: false,
-                )),
-            children: const [Text(resTimerIntervalOptionDesc)],
           ),
           ExpansionTile(
             title: const Text(resSignalRNotificationsOptionTitle),
