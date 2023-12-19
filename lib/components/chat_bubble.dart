@@ -8,6 +8,47 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var color = isMe ? appColor().toMaterialColor()[500] : null;
+    return GestureDetector(
+        onLongPress: () async {
+          await Clipboard.setData(ClipboardData(text: message.message));
+          Fluttertoast.showToast(msg: resCopied);
+        },
+        child: Bubble(
+          margin: const BubbleEdges.symmetric(vertical: 2, horizontal: 10),
+          nip: isMe ? BubbleNip.rightTop : BubbleNip.leftTop,
+          color: color,
+          alignment: isMe ? Alignment.topRight : Alignment.topLeft,
+          child: Column(
+            crossAxisAlignment:
+                isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    message.sender,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    timeAgo(message.sendTime),
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                ],
+              ),
+              Text(
+                message.message,
+                textAlign: TextAlign.right,
+                textDirection: (message.message.dirction),
+              ),
+            ],
+          ),
+        ));
+
     return GestureDetector(
       onLongPress: () async {
         await Clipboard.setData(ClipboardData(text: message.message));
