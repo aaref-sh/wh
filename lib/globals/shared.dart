@@ -83,19 +83,9 @@ bool isRtl(String text) {
 
 Future<void> loadSettings() async {
   await initSharedPreferences();
-  var promises = await Future.wait([
-    getOrSet('color', mainColor),
-    getOrSet('timeInterval', timeInterval),
-    getOrSet('signalrnotifications', true),
-    getOrSet('resendnotifications', true),
-    getOrSet('chatsnotifications', true),
-    getOrSet(pendingMessagesKey, ''),
-  ]);
-  mainColor = promises[0];
-  timeInterval = promises[1];
-  signalRConnectionNotifications = promises[2];
-  resendFailedStatusNotifications = promises[3];
-  chatsNotifications = promises[4];
+
+  var settingsString = await getOrSet('settings', jsonEncode(Settings.empty()));
+  settings = Settings.fromMap(jsonDecode(settingsString));
 }
 
 Future<dynamic> getOrSet(String key, defaultValue) async {
@@ -156,3 +146,15 @@ void navigateTo(context, {Widget? to}) {
         context, MaterialPageRoute(builder: (_) => to ?? const HomePage()));
   });
 }
+
+void updateBackgroundSettings() {
+  var msg =
+      IsolateMessage(IsolateMessages.updateSettings.index, settings.toJson());
+  sendToBackground(msg);
+}
+
+Future<bool> saveSettings() async =>
+    await prefs.set('settings', jsonEncode(settings.toJson()));
+
+void sendToBackground(IsolateMessage msg) =>
+    IsolateNameServer.lookupPortByName(backgroundIsolate)?.send(msg.toJson());

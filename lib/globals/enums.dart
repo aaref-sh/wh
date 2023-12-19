@@ -3,3 +3,10 @@ enum States {
   needHelp,
   emergency,
 }
+
+enum IsolateMessages {
+  toggleNotifications,
+  updateSettings,
+  chatMessage,
+  failedStatus,
+}

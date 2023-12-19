@@ -14,8 +14,9 @@ class ChatScreenState extends State<ChatScreen> {
   int page = 1;
   void _sendMessage() {
     if (_controller.text.trim().isNotEmpty) {
-      IsolateNameServer.lookupPortByName(backgroundIsolate)
-          ?.send(_controller.text.trim());
+      var msg = IsolateMessage(
+          IsolateMessages.chatMessage.index, _controller.text.trim());
+      IsolateNameServer.lookupPortByName(backgroundIsolate)?.send(msg.toJson());
       _controller.clear();
     }
   }

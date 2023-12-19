@@ -24,10 +24,10 @@ resumeCallBack() {
 }
 
 detachedCallBack() {
-  IsolateNameServer.removePortNameMapping(mainIsolate);
   tougleNotifications(1);
 }
 
 void tougleNotifications(int n) {
-  IsolateNameServer.lookupPortByName(backgroundIsolate)?.send(n);
+  var msg = IsolateMessage(IsolateMessages.toggleNotifications.index, n);
+  IsolateNameServer.lookupPortByName(backgroundIsolate)?.send(msg.toJson());
 }

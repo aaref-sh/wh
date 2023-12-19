@@ -4,3 +4,5 @@ export './geo_location.dart';
 export 'message.dart';
 export 'mobile_message.dart';
 export 'admin_message.dart';
+export 'settings.dart';
+export 'isolate_message.dart';

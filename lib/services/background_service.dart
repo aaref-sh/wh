@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:signalr_core/signalr_core.dart';
 import 'package:wh/all.dart';
 
 var pendingMessages = <MobileMessage>[];
@@ -43,21 +44,32 @@ Future<void> onStart(ServiceInstance service) async {
   // if app is oppened ,this will turn of the messages notifications
   IsolateNameServer.lookupPortByName(mainIsolate)?.send(1);
 
-  port.listen((msg) {
-    if (msg is int) {
-      notifyOnNewMessage = msg == 1;
-    } else if (msg is Map<String, dynamic>) {
-      var message = MobileMessage.fromMap(msg);
-      pendingMessages.add(message);
-    } else {
-      hubConnection.invoke("Chat", args: [msg]);
+  port.listen((message) {
+    var msg = IsolateMessage.fromMap(message);
+
+    switch (IsolateMessages.values[msg.message]) {
+      case IsolateMessages.toggleNotifications:
+        notifyOnNewMessage = msg.data == 1;
+        break;
+      case IsolateMessages.updateSettings:
+        settings = Settings.fromMap(msg.data);
+        break;
+      case IsolateMessages.chatMessage:
+        hubConnection.invoke("Chat", args: [msg.data]);
+        break;
+      case IsolateMessages.failedStatus:
+        var message = MobileMessage.fromMap(msg.data);
+        pendingMessages.add(message);
+        break;
     }
   });
 
   while (true) {
     await signalRConnect(hubConnection);
-    await Future.delayed(const Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 5));
     await resendFailedStatusMessages();
+    IsolateNameServer.lookupPortByName(mainIsolate)
+        ?.send(hubConnection.state == HubConnectionState.connected ? 3 : 4);
   }
 }
 

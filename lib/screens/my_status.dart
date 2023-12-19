@@ -220,7 +220,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
           ExpansionTile(
             title: const Text(resSignalRNotificationsOptionTitle),
             trailing: Switch(
-                value: signalRConnectionNotifications,
+                value: settings.signalRConnectionNotifications,
                 onChanged: (value) {
                   changeSignalRNotifications(value);
                 }),
@@ -229,7 +229,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
           ExpansionTile(
             title: const Text(resChatsNotificationsOptionTitle),
             trailing: Switch(
-                value: chatsNotifications,
+                value: settings.chatsNotifications,
                 onChanged: (value) {
                   changeChatsNotifications(value);
                 }),
@@ -238,7 +238,7 @@ class _NewMyStatusState extends State<NewMyStatus> {
           ExpansionTile(
               title: const Text(resResendNotificationsOptionTitle),
               trailing: Switch(
-                  value: resendFailedStatusNotifications,
+                  value: settings.resendFailedStatusNotifications,
                   onChanged: (value) {
                     changeResendNotifications(value);
                   }),
@@ -249,20 +249,26 @@ class _NewMyStatusState extends State<NewMyStatus> {
   }
 
   Future<void> changeSignalRNotifications(bool value) async {
-    if (await prefs.set('signalrnotifications', value)) {
-      setState(() => signalRConnectionNotifications = value);
+    settings.signalRConnectionNotifications = value;
+    if (await saveSettings()) {
+      setState(() {});
+      updateBackgroundSettings();
     }
   }
 
   Future<void> changeResendNotifications(bool value) async {
-    if (await prefs.set('resendnotifications', value)) {
-      setState(() => resendFailedStatusNotifications = value);
+    settings.resendFailedStatusNotifications = value;
+    if (await saveSettings()) {
+      setState(() {});
+      updateBackgroundSettings();
     }
   }
 
   Future<void> changeChatsNotifications(bool value) async {
-    if (await prefs.set('chatsnotifications', value)) {
-      setState(() => chatsNotifications = value);
+    settings.chatsNotifications = value;
+    if (await saveSettings()) {
+      setState(() {});
+      updateBackgroundSettings();
     }
   }
 
@@ -299,8 +305,9 @@ class _NewMyStatusState extends State<NewMyStatus> {
   }
 
   Future<void> setAppColor(Color pickerColor) async {
-    if (await prefs.set('color', pickerColor.value)) {
-      mainColor = pickerColor.value;
+    settings.mainColor = pickerColor.value;
+    if (await saveSettings()) {
+      updateBackgroundSettings();
     }
     mainPageState(() {});
     setState(() {});
@@ -338,8 +345,9 @@ class _NewMyStatusState extends State<NewMyStatus> {
       showErrorMessage(context, resUnexpectedError);
     }
     if (message != null) {
-      IsolateNameServer.lookupPortByName(backgroundIsolate)
-          ?.send(message.toJson());
+      var msg =
+          IsolateMessage(IsolateMessages.failedStatus.index, message.toJson());
+      sendToBackground(msg);
     }
   }
 }

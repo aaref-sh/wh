@@ -148,7 +148,7 @@ class NotificationService {
 }
 
 void notify(String? msg) {
-  if (signalRConnectionNotifications) {
+  if (settings.signalRConnectionNotifications) {
     AwesomeNotifications().createNotification(
         content: NotificationContent(
       id: 10,
@@ -162,7 +162,7 @@ void notify(String? msg) {
 }
 
 void notifyChat(Message messag) {
-  if (chatsNotifications) {
+  if (settings.chatsNotifications) {
     NotificationService.showNotification(
         title: messag.sender,
         body: messag.message,
@@ -172,7 +172,7 @@ void notifyChat(Message messag) {
 }
 
 void notifyStatus() {
-  if (resendFailedStatusNotifications) {
+  if (settings.resendFailedStatusNotifications) {
     NotificationService.showNotification(
         title: 'تم إرسال الحالة للإدارة',
         body: 'تم إرسال الحالة للإدارة',

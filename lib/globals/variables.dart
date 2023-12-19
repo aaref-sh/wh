@@ -24,11 +24,6 @@ const backgroundIsolate = "backgroundIsolate";
 const seperator = "\$#\$";
 const mapSmoothRate = 30;
 const mapDefaultZoom = 16;
-
-int timeInterval = 35;
-int mainColor = 0xFF2196F3;
-bool signalRConnectionNotifications = true;
-bool resendFailedStatusNotifications = true;
-bool chatsNotifications = true;
+var settings = Settings.empty();
 const pendingMessagesKey = 'pendingMessages';
 const notificationId = 888;
