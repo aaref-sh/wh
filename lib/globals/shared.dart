@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../all.dart';
@@ -78,7 +80,7 @@ Future<void> initToken() async {
 
 var rtlRegex = RegExp(r'[\u0591-\u07FF]');
 bool isRtl(String text) {
-  return rtlRegex.hasMatch(text);
+  return text.isEmpty || rtlRegex.hasMatch(text);
 }
 
 Future<void> loadSettings() async {
@@ -138,7 +140,13 @@ extension ColorsExt on Color {
   }
 }
 
-Color appColor() => Color(mainColor);
+extension StringExt on String {
+  TextDirection get dirction {
+    return isEmpty || isRtl(this) ? TextDirection.rtl : TextDirection.ltr;
+  }
+}
+
+Color appColor() => Color(settings.mainColor);
 
 void navigateTo(context, {Widget? to}) {
   WidgetsBinding.instance.addPostFrameCallback((_) {

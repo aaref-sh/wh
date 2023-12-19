@@ -59,7 +59,7 @@ class ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     var length = messages.length;
-    return Scaffold(
+        textDirection: TextDirection.rtl,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(resChatTapLabel),

@@ -23,11 +23,8 @@ class _ChatTextFieldState extends State<ChatTextField> {
         decoration: InputDecoration.collapsed(
             hintText: resTypeMessage,
             border: InputBorder.none,
-            hintTextDirection:
-                isRtl(resTypeMessage) ? TextDirection.rtl : TextDirection.ltr),
-        textDirection: isRtl(widget._controller.text)
-            ? TextDirection.rtl
-            : TextDirection.ltr,
+            hintTextDirection: resTypeMessage.dirction),
+        textDirection: widget._controller.text.dirction,
         maxLines: 1,
         controller: widget._controller,
       ),
